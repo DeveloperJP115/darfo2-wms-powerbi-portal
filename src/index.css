@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+/*
+ * DESIGN TOKENS — the one place to tune the look of the portal.
+ *
+ * Palette: DA institutional green ("field") carries the brand, warm neutrals
+ * ("paper"/"ink") carry the reading surface, and a muted grain gold ("grain")
+ * is reserved for one job only: marking a dashboard as not yet published.
+ * Type: Archivo for display, Source Sans 3 for reading, IBM Plex Mono for
+ * station codes and status — the codes are set in mono so they align into a
+ * column, the way a warehouse stock card does.
+ */
+@theme {
+  --color-field-950: #052018;
+  --color-field-900: #0a3526;
+  --color-field-800: #0e432f;
+  --color-field-700: #14603f;
+  --color-field-600: #1b7a50;
+  --color-field-500: #2e9466;
+
+  --color-grain-600: #8f6416;
+  --color-grain-500: #c08a2a;
+  --color-grain-100: #f5e9d0;
+
+  --color-paper: #f6f5f0;
+  --color-paper-raised: #ffffff;
+
+  --color-ink: #16211c;
+  --color-ink-soft: #55625b;
+  --color-ink-faint: #7d877f;
+  --color-rule: #dcded5;
+
+  --font-display: "Archivo", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    /* Base size runs slightly large: the primary venue is a projector. */
+    @apply bg-paper text-ink font-sans text-[17px] leading-relaxed antialiased;
+  }
+
+  /* One consistent focus ring everywhere, including on the dark sidebar. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-field-500;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display text-balance;
+  }
+}
+
+@layer components {
+  /*
+   * Stock card: a warehouse bin tag. The clipped top-right corner is drawn by
+   * stacking a 1px rule-coloured plate under an inset white plate, because a
+   * normal border would not follow the clip.
+   */
+  .stock-card {
+    --notch: 12px;
+    clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);
+    @apply bg-rule p-px;
+  }
+
+  .stock-card__inner {
+    --notch: 11px;
+    clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);
+    @apply bg-paper-raised h-full;
+  }
+
+  /* Small uppercase label used for eyebrows and field names. */
+  .eyebrow {
+    @apply font-mono text-[11px] uppercase tracking-[0.18em];
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

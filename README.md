@@ -120,11 +120,17 @@ The paths live in `SITE.logos` in the config if you need to change them.
 `BrandLogo` component falls back to a green lettered disc (`DA` / `BP`), so the layout
 holds and no broken-image icon ever appears.
 
-### Adjust the palette
+### Adjust the palette or type
 
-Colors live in the Tailwind config / tokens file, not scattered through components —
-a restrained institutional palette (deep green, neutral grays, blue accent). Tune it in
-that one place.
+Every color, typeface, and shadow is a token in the `@theme` block at the top of
+`src/index.css` — nothing is hardcoded in components. Tune it in that one place.
+
+- `leaf` — mid-tone DA green. Identity and every interactive state.
+- `sand` — warm neutrals for the masthead and footer, so the page never reads cold.
+- `canvas` / `card` — the pale ground and the white cards that float on it.
+- `clay` — reserved for one job only: marking a dashboard that isn't published yet.
+  Don't reuse it for anything else, or the signal stops meaning anything.
+- `ink` — text, from `ink` through `ink-soft` to `ink-faint`.
 
 ---
 
@@ -187,25 +193,36 @@ Deliberately **not** Next.js, and deliberately not TypeScript.
 src/
   config/stations.js     the only file you edit for content
   components/
-    AppLayout.jsx        sidebar + main + footer shell, mobile drawer state
-    Sidebar.jsx          persistent station index
-    Footer.jsx           office identity, vision, contact
-    StationCard.jsx      station as a warehouse stock card
+    AppLayout.jsx        thin shell: main + footer, skip link
+    Masthead.jsx         home masthead with logos and the motif wash
+    StationTile.jsx      one switch on the home switchboard
+    ReportBar.jsx        slim report chrome: back link, identity, code switcher
     DashboardEmbed.jsx   Power BI iframe, or the "coming soon" placeholder
     StatusTag.jsx        the one Live / Coming soon vocabulary
     BrandLogo.jsx        logo image with monogram fallback
+    Botanical.jsx        the seed-leaf motif and watermark
+    Footer.jsx           office identity, vision, contact
   pages/
-    Home.jsx             hero, station index strip, card grid
+    Home.jsx             masthead plus the station switchboard
     DashboardPage.jsx    the /:slug route
     NotFound.jsx         unknown slug or unknown path
   index.css              design tokens (@theme) — palette and type live here
 ```
 
-Design notes, in case you extend it: station codes are set in mono at a fixed width so
-they align into a column across the sidebar, hero index, and cards — the portal reads as
-a manifest of stations. The grain gold is reserved for exactly one job, marking a
-dashboard as not yet published. Base type runs slightly large because the primary venue
-is a projector.
+Design notes, in case you extend it:
+
+- **Home is a switchboard, report pages are almost bare.** There is no persistent
+  sidebar. The home page exists to be presented from; a report page gives its width to
+  the dashboard and keeps only a slim bar with a back link and a code switcher.
+- **Cards float, they don't outline.** Elevation and roundness carry the structure
+  instead of hairline borders — that is most of what keeps the portal from feeling harsh.
+- **Mono is only for station codes.** In a meeting the code is what people say out loud,
+  so it leads each tile. Everything else is set in the humanist sans; spreading mono
+  further is what made an earlier pass read as robotic.
+- **The seed-leaf motif appears twice.** Washed across the masthead, and as a watermark
+  behind an unpublished dashboard. Adding a third use turns it into wallpaper.
+- **Type runs large on purpose.** The venue is a projector in a meeting room, and the
+  extra size and spacing are what keep the density friendly.
 
 ---
 

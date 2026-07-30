@@ -1,27 +1,33 @@
 /**
  * The portal's one status vocabulary: a dashboard is either "Live" or
- * "Coming soon". Used on cards, in the hero index, and on dashboard headers so
- * the same report reads the same way everywhere.
+ * "Coming soon". Used on the switchboard, the report bar, and the placeholder,
+ * so the same report reads the same way everywhere.
  *
- * tone="dark" is for use on the deep green surfaces.
+ * Clay is reserved for the unpublished state and is used nowhere else.
  */
-export default function StatusTag({ live, tone = "light", showLabel = true }) {
+export default function StatusTag({ live, showLabel = true }) {
   const label = live ? "Live" : "Coming soon";
 
-  const dotColor = live ? (tone === "dark" ? "bg-field-500" : "bg-field-600") : "bg-grain-500";
+  const pill = live
+    ? "bg-leaf-100 text-leaf-700"
+    : "bg-clay-100 text-clay-600";
 
-  const textColor = live
-    ? tone === "dark"
-      ? "text-field-500"
-      : "text-field-700"
-    : tone === "dark"
-      ? "text-grain-500"
-      : "text-grain-600";
+  const dot = live ? "bg-leaf-500" : "bg-clay-600";
+
+  if (!showLabel) {
+    return (
+      <span className={`inline-flex size-2 rounded-full ${dot}`}>
+        <span className="sr-only">{label}</span>
+      </span>
+    );
+  }
 
   return (
-    <span className={`inline-flex items-center gap-1.5 ${textColor}`}>
-      <span aria-hidden="true" className={`size-1.5 rounded-full ${dotColor}`} />
-      <span className={showLabel ? "eyebrow" : "sr-only"}>{label}</span>
+    <span
+      className={`eyebrow inline-flex items-center gap-2 rounded-full px-3 py-1.5 ${pill}`}
+    >
+      <span aria-hidden="true" className={`size-1.5 rounded-full ${dot}`} />
+      {label}
     </span>
   );
 }

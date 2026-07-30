@@ -30,6 +30,9 @@ pnpm-debug.log*
 Thumbs.db
 desktop.ini
 
+# Internal planning docs (kept local, not published)
+WMS_Portal_Claude_Code_Brief.md
+
 # Environment
 .env
 .env.*

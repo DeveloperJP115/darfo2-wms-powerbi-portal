@@ -11,14 +11,6 @@ This is the warehouse-focused sibling of the existing **RGA** portal
 (<https://darfo2powerbi.vercel.app/>), which is the visual and structural template for
 this project. The RGA codebase is not reused — only its pattern and feel.
 
-> **Project status:** this repository currently holds the build brief
-> ([`WMS_Portal_Claude_Code_Brief.md`](./WMS_Portal_Claude_Code_Brief.md)) and this
-> README. The Vite + React application described below has not been scaffolded yet, so
-> the local-development and deployment commands are the intended workflow, not something
-> you can run today. See [Roadmap](#roadmap).
-
----
-
 ## What it is (and is not)
 
 **Is:** a front-end-only static single-page app. React Router shell, left sidebar of
@@ -116,12 +108,17 @@ page. So stations can go live before their reports are ready.
 ### Add the logo assets
 
 Logos are plain `<img>` tags pointing at files in `/public`. Drop the real images in at
-these exact paths, replacing the placeholders:
+these paths:
 
 - `public/da-logo.png` — Department of Agriculture logo
 - `public/bp.png` — Bagong Pilipinas logo
 
 Transparent PNGs, roughly 512 px on the long edge, look best in the hero and footer.
+The paths live in `SITE.logos` in the config if you need to change them.
+
+**No placeholder image files ship with the repo.** Until the real files are in place, the
+`BrandLogo` component falls back to a green lettered disc (`DA` / `BP`), so the layout
+holds and no broken-image icon ever appears.
 
 ### Adjust the palette
 
@@ -184,29 +181,53 @@ Deliberately **not** Next.js, and deliberately not TypeScript.
 
 ---
 
-## Roadmap
+## Project structure
 
-Remaining work, per the build brief:
+```
+src/
+  config/stations.js     the only file you edit for content
+  components/
+    AppLayout.jsx        sidebar + main + footer shell, mobile drawer state
+    Sidebar.jsx          persistent station index
+    Footer.jsx           office identity, vision, contact
+    StationCard.jsx      station as a warehouse stock card
+    DashboardEmbed.jsx   Power BI iframe, or the "coming soon" placeholder
+    StatusTag.jsx        the one Live / Coming soon vocabulary
+    BrandLogo.jsx        logo image with monogram fallback
+  pages/
+    Home.jsx             hero, station index strip, card grid
+    DashboardPage.jsx    the /:slug route
+    NotFound.jsx         unknown slug or unknown path
+  index.css              design tokens (@theme) — palette and type live here
+```
 
-- [ ] Scaffold the Vite + React + Tailwind + React Router app
-- [ ] `src/config/stations.js` as the single source of truth
-- [ ] Shared layout: persistent responsive left sidebar (hamburger on mobile) + footer
-- [ ] Home route: hero, "what this is" section, station card grid
-- [ ] Dynamic `/:station` route with full-bleed responsive Power BI iframe
-- [ ] Empty-`embedUrl` "coming soon" placeholder behavior
-- [ ] Graceful not-found state for unknown slugs, linking back to home
-- [ ] Placeholder logo assets in `/public`
-- [ ] `vercel.json` catch-all rewrite
-- [ ] Verify `npm run build` and `npm run preview` pass cleanly
+Design notes, in case you extend it: station codes are set in mono at a fixed width so
+they align into a column across the sidebar, hero index, and cards — the portal reads as
+a manifest of stations. The grain gold is reserved for exactly one job, marking a
+dashboard as not yet published. Base type runs slightly large because the primary venue
+is a projector.
 
-Open items for the office to confirm:
+---
+
+## Open items
+
+For the office to confirm:
 
 - The full official name of **SCRC** (currently a placeholder)
 - Power BI "Publish to web" URLs for each station
-- Whether to enable the combined **All Stations / Regional Overview** dashboard route
 - Final DA logo and Bagong Pilipinas logo image files
 - Whether the contact details — carried over from the RGA footer as defaults — are correct
   for the WMS context
+
+The combined **All Stations / Regional Overview** route is built and enabled, with an
+empty embed slot waiting for its report. Set `REGIONAL_OVERVIEW.enabled` to `false` in the
+config to hide it from the nav and home page.
+
+One dependency note: `npm audit` reports a high-severity React Router advisory
+([GHSA-qwww-vcr4-c8h2](https://github.com/advisories/GHSA-qwww-vcr4-c8h2)) affecting RSC
+mode. This portal is a client-side SPA with no server, no RSC, and no router actions, so
+the affected code path is never executed. The only remediation npm offers is a downgrade,
+so the version is left as-is deliberately. Do not run `npm audit fix --force` here.
 
 ---
 

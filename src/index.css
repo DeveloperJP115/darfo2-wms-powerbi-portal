@@ -3,36 +3,48 @@
 /*
  * DESIGN TOKENS — the one place to tune the look of the portal.
  *
- * Palette: DA institutional green ("field") carries the brand, warm neutrals
- * ("paper"/"ink") carry the reading surface, and a muted grain gold ("grain")
- * is reserved for one job only: marking a dashboard as not yet published.
- * Type: Archivo for display, Source Sans 3 for reading, IBM Plex Mono for
- * station codes and status — the codes are set in mono so they align into a
- * column, the way a warehouse stock card does.
+ * Daylight: a pale green canvas with white cards lifted off it by soft shadow,
+ * so nothing is boxed in by hairlines. Warm sand carries the masthead and
+ * footer so the page never reads as cold gray.
+ *
+ * Green is the identity and every interactive state. Clay has exactly one job:
+ * marking a dashboard that is not published yet. Nothing else may use it.
+ *
+ * Type is set large on purpose — the primary venue is a projector in a meeting
+ * room, and the extra size is what keeps the density friendly rather than
+ * technical. Mono is reserved for station codes only.
  */
 @theme {
-  --color-field-950: #052018;
-  --color-field-900: #0a3526;
-  --color-field-800: #0e432f;
-  --color-field-700: #14603f;
-  --color-field-600: #1b7a50;
-  --color-field-500: #2e9466;
+  --color-leaf-700: #1f5c39;
+  --color-leaf-600: #256540;
+  --color-leaf-500: #2f7d4f;
+  --color-leaf-400: #4f9d6c;
+  --color-leaf-100: #e3efe7;
 
-  --color-grain-600: #8f6416;
-  --color-grain-500: #c08a2a;
-  --color-grain-100: #f5e9d0;
+  --color-sand-200: #e8e0d1;
+  --color-sand-100: #f2ece1;
+  --color-sand-50: #faf7f0;
 
-  --color-paper: #f6f5f0;
-  --color-paper-raised: #ffffff;
+  --color-canvas: #f1f5ef;
+  --color-card: #ffffff;
 
-  --color-ink: #16211c;
-  --color-ink-soft: #55625b;
-  --color-ink-faint: #7d877f;
-  --color-rule: #dcded5;
+  --color-clay-600: #a8623c;
+  --color-clay-100: #f6eae1;
 
-  --font-display: "Archivo", "Segoe UI", system-ui, sans-serif;
-  --font-sans: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --color-ink: #1f2a24;
+  --color-ink-soft: #55635b;
+  --color-ink-faint: #8a938c;
+  --color-hairline: #dee4dc;
+
+  --font-display: "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Hanken Grotesk", "Segoe UI", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+
+  /* Diffuse, low-contrast elevation. Cards should float, not outline. */
+  --shadow-card:
+    0 1px 2px rgb(31 42 36 / 0.04), 0 10px 28px -14px rgb(31 42 36 / 0.12);
+  --shadow-lift:
+    0 2px 4px rgb(31 42 36 / 0.05), 0 18px 40px -16px rgb(31 42 36 / 0.18);
 }
 
 @layer base {
@@ -41,13 +53,11 @@
   }
 
   body {
-    /* Base size runs slightly large: the primary venue is a projector. */
-    @apply bg-paper text-ink font-sans text-[17px] leading-relaxed antialiased;
+    @apply bg-canvas text-ink font-sans text-[19px] leading-[1.7] antialiased;
   }
 
-  /* One consistent focus ring everywhere, including on the dark sidebar. */
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-field-500;
+    @apply outline-leaf-500 outline-2 outline-offset-2;
   }
 
   h1,
@@ -58,26 +68,18 @@
 }
 
 @layer components {
-  /*
-   * Stock card: a warehouse bin tag. The clipped top-right corner is drawn by
-   * stacking a 1px rule-coloured plate under an inset white plate, because a
-   * normal border would not follow the clip.
-   */
-  .stock-card {
-    --notch: 12px;
-    clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);
-    @apply bg-rule p-px;
+  /* Station codes: the one place mono appears. */
+  .code {
+    @apply font-mono font-medium tracking-tight;
   }
 
-  .stock-card__inner {
-    --notch: 11px;
-    clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);
-    @apply bg-paper-raised h-full;
-  }
-
-  /* Small uppercase label used for eyebrows and field names. */
+  /* Small uppercase label for eyebrows and field names. */
   .eyebrow {
-    @apply font-mono text-[11px] uppercase tracking-[0.18em];
+    @apply font-sans text-[12px] font-semibold uppercase tracking-[0.14em];
+  }
+
+  .card {
+    @apply bg-card shadow-card rounded-2xl;
   }
 }
 

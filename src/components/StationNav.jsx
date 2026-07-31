@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 import StationDrawer from "./StationDrawer.jsx";
 
@@ -8,6 +9,11 @@ import StationDrawer from "./StationDrawer.jsx";
  *
  * Nothing is on screen until the button is pressed — the drawer is the only
  * navigation chrome in the portal, and it stays out of the way until asked for.
+ *
+ * The drawer is portalled to <body> because it must size itself against the
+ * viewport. The report bar uses backdrop-blur, and an element with a
+ * backdrop-filter becomes the containing block for its fixed descendants — left
+ * in place, the panel would be trapped inside the height of that bar.
  */
 export default function StationNav({ showLabel = true, className = "" }) {
   const [open, setOpen] = useState(false);
@@ -44,7 +50,10 @@ export default function StationNav({ showLabel = true, className = "" }) {
         {showLabel && <span className="hidden text-[15px] sm:inline">Switch station</span>}
       </button>
 
-      <StationDrawer open={open} onClose={() => setOpen(false)} triggerRef={triggerRef} />
+      {createPortal(
+        <StationDrawer open={open} onClose={() => setOpen(false)} triggerRef={triggerRef} />,
+        document.body,
+      )}
     </>
   );
 }

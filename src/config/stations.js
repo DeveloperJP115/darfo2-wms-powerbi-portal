@@ -2,8 +2,11 @@
  * SINGLE SOURCE OF TRUTH FOR THIS PORTAL.
  *
  * This is the only file you need to edit to change content. It drives the
- * sidebar, the routes, the home page cards, the embeds, and the footer.
+ * switchboard, the station drawer, the routes, the embeds, and the footer.
  * You should never have to open a component to change wording or add a station.
+ *
+ * The number of stations is not fixed — the portal works with however many
+ * entries STATIONS holds, so never write a count into copy or markup.
  */
 
 export const SITE = {
@@ -40,10 +43,10 @@ export const SITE = {
 };
 
 /**
- * The five RCES stations, in the order they appear in the sidebar.
+ * The RCES stations, in the order they appear on the switchboard.
  *
- * To add a station: add an entry here. To remove one: delete its entry. The nav,
- * the route, and the home page card all follow automatically.
+ * To add a station: add an entry here. To remove one: delete its entry. The
+ * switchboard tile, the drawer entry, and the route all follow automatically.
  *
  * embedUrl: paste the Power BI "Publish to web (public)" link, which looks like
  *   https://app.powerbi.com/view?r=<LONG_TOKEN>
@@ -96,7 +99,7 @@ export const STATIONS = [
 
 /**
  * Optional regional roll-up that combines all stations into one report.
- * Set `enabled: false` to hide it from the nav and the home page entirely.
+ * Set `enabled: false` to hide it from the drawer and the switchboard entirely.
  */
 export const REGIONAL_OVERVIEW = {
 	enabled: true,
@@ -105,11 +108,11 @@ export const REGIONAL_OVERVIEW = {
 	name: "All Stations — Regional Overview",
 	embedUrl: "",
 	blurb:
-		"Harmonized roll-up of all five stations for FOD-level reporting across the region.",
+		"Harmonized roll-up of every station for FOD-level reporting across the region.",
 };
 
 /**
- * Everything that gets a route and a sidebar entry, overview first when enabled.
+ * Everything that gets a route, overview first when enabled.
  * Components read this rather than assembling the list themselves.
  */
 export const DASHBOARDS = REGIONAL_OVERVIEW.enabled

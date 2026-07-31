@@ -34,11 +34,6 @@ export default function Masthead() {
         <p className="text-ink-soft mt-7 max-w-2xl text-2xl leading-relaxed">
           {SITE.subtitle}
         </p>
-
-        <p className="bg-card ring-hairline mt-12 inline-flex items-center gap-2.5 rounded-full px-4 py-2.5 ring-1">
-          <span aria-hidden="true" className="bg-leaf-500 size-2 rounded-full" />
-          <span className="text-ink-soft text-[16px]">{SITE.publicAccessNote}</span>
-        </p>
       </div>
     </header>
   );

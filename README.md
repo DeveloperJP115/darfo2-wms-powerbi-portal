@@ -13,8 +13,9 @@ this project. The RGA codebase is not reused — only its pattern and feel.
 
 ## What it is (and is not)
 
-**Is:** a front-end-only static single-page app. React Router shell, left sidebar of
-stations, one page per station, each embedding a Power BI report in a responsive iframe.
+**Is:** a front-end-only static single-page app. A home switchboard of stations, one page
+per station embedding a Power BI report in a responsive iframe, and a slide-over drawer
+for switching between them.
 
 **Is not:** there is no backend, no database, no authentication, no API routes, no
 server-side code. No Power BI JavaScript SDK, no embed tokens, no service principals,
@@ -52,21 +53,22 @@ divisions):
 | ------- | ----- | ----------------------------------- |
 | `/`     | —     | Home / regional overview            |
 | `/nces` | NCES  | Northern Cagayan Experiment Station |
-| `/ies`  | IES   | Ilagan Experiment Station           |
+| `/ies`  | IES   | Isabela Experiment Station          |
 | `/cvrc` | CVRC  | Cagayan Valley Research Center      |
 | `/scrc` | SCRC  | *(full name to be confirmed)*       |
 | `/qes`  | QES   | Quirino Experiment Station          |
 
-All five stations run the same SharePoint template, so their dashboards are structurally
-similar — which is why the app uses a **single dynamic `/:station` route driven by config**
-rather than five copy-pasted pages.
+That list is the current one, not a fixed set — stations can be added or removed at any
+time. They all run the same SharePoint template, so their dashboards are structurally
+similar, which is why the app uses a **single dynamic `/:station` route driven by config**
+rather than one hand-written page per station.
 
 ---
 
 ## Editing content: `src/config/stations.js`
 
-**One file drives everything** — the sidebar, the routes, the station cards, the embeds,
-and the footer. You should never need to touch component code to change content.
+**One file drives everything** — the switchboard, the drawer, the routes, the embeds, and
+the footer. You should never need to touch component code to change content.
 
 ```js
 export const SITE = {
@@ -78,8 +80,8 @@ export const SITE = {
 export const STATIONS = [
   {
     slug: "nces",                                   // becomes the route: /nces
-    short: "NCES",                                  // sidebar label
-    name: "Northern Cagayan Experiment Station",    // page header + card title
+    short: "NCES",                                  // tile and drawer label
+    name: "Northern Cagayan Experiment Station",    // page header + tile title
     embedUrl: "",                                   // Power BI "Publish to web" URL
     blurb: "Seed inventory, deliveries, withdrawals, germination, and environmental logs.",
   },
@@ -89,9 +91,10 @@ export const STATIONS = [
 
 ### Add, rename, or remove a station
 
-Add, edit, or delete an entry in `STATIONS`. The sidebar nav, the route, and the home-page
-card all follow automatically. Station names in that array are the only copy of those
-names — correcting `SCRC`'s full name, for instance, is a one-line edit there.
+Add, edit, or delete an entry in `STATIONS`. The switchboard tile, the drawer entry, and
+the route all follow automatically — there is no fixed station count anywhere in the code.
+Station names in that array are the only copy of those names, so correcting `SCRC`'s full
+name, for instance, is a one-line edit there.
 
 ### Paste in a Power BI embed URL
 
@@ -196,7 +199,8 @@ src/
     AppLayout.jsx        thin shell: main + footer, skip link
     Masthead.jsx         home masthead with logos and the motif wash
     StationTile.jsx      one switch on the home switchboard
-    ReportBar.jsx        slim report chrome: back link, identity, code switcher
+    ReportBar.jsx        slim report chrome: home link, identity, drawer trigger
+    StationDrawer.jsx    slide-over station switcher, reachable from any report
     DashboardEmbed.jsx   Power BI iframe, or the "coming soon" placeholder
     StatusTag.jsx        the one Live / Coming soon vocabulary
     BrandLogo.jsx        logo image with monogram fallback
@@ -213,7 +217,12 @@ Design notes, in case you extend it:
 
 - **Home is a switchboard, report pages are almost bare.** There is no persistent
   sidebar. The home page exists to be presented from; a report page gives its width to
-  the dashboard and keeps only a slim bar with a back link and a code switcher.
+  the dashboard and keeps only a slim bar. Switching stations mid-meeting goes through
+  the slide-over drawer behind that bar's "Switch station" button — the same component
+  on desktop and mobile, closable with Esc, the overlay, or by picking a station.
+- **The station count is not fixed.** Never write a number of stations into copy,
+  markup, or a comment. Everything maps over `STATIONS`, so the portal works with
+  however many entries the config holds.
 - **Cards float, they don't outline.** Elevation and roundness carry the structure
   instead of hairline borders — that is most of what keeps the portal from feeling harsh.
 - **Mono is only for station codes.** In a meeting the code is what people say out loud,

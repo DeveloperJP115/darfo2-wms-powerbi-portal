@@ -62,10 +62,10 @@ export const STATIONS = [
 	{
 		slug: "ies",
 		short: "IES",
-		name: "Ilagan Experiment Station",
+		name: "Isabela Experiment Station",
 		embedUrl: "",
 		blurb:
-			"Warehouse stock movement and storage conditions for the Ilagan station.",
+			"Warehouse stock movement and storage conditions for the Isabela station.",
 	},
 	{
 		slug: "cvrc",
@@ -73,7 +73,7 @@ export const STATIONS = [
 		name: "Cagayan Valley Research Center",
 		embedUrl: "",
 		blurb:
-			"Seed and input inventory for the regional research center at Ilagan.",
+			"Seed and input inventory for the regional research center.",
 	},
 	{
 		slug: "scrc",

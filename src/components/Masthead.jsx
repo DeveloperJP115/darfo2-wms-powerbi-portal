@@ -1,11 +1,16 @@
 import { SITE } from "../config/stations.js";
 import BrandLogo from "./BrandLogo.jsx";
+import StationNav from "./StationNav.jsx";
 import { MotifField } from "./Botanical.jsx";
 
 export default function Masthead() {
   return (
     <header className="bg-sand-50 relative overflow-hidden">
       <MotifField className="text-leaf-600 pointer-events-none absolute inset-0 size-full opacity-[0.07]" />
+
+      {/* Icon only, tucked into the corner: the switchboard below is the real
+          navigation, so this is a shortcut rather than the main route in. */}
+      <StationNav showLabel={false} className="absolute top-6 left-6 z-10 md:top-8 md:left-10" />
 
       {/* Centred: the masthead is the one place the portal is addressing the
           room rather than presenting data, so it sits on the page's axis. */}

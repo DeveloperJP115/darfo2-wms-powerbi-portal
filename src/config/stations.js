@@ -81,11 +81,10 @@ export const STATIONS = [
 	{
 		slug: "scrc",
 		short: "SCRC",
-		// TODO(office): confirm the full official name for SCRC.
-		name: "SCRC — full name to be confirmed",
+		name: "Southern Cagayan Experiment Station",
 		embedUrl: "",
 		blurb:
-			"Warehouse stock movement and storage conditions for the SCRC station.",
+			"Warehouse stock movement and storage conditions for the Southern Cagayan station.",
 	},
 	{
 		slug: "qes",

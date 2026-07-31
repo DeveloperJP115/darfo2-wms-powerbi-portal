@@ -55,7 +55,7 @@ divisions):
 | `/nces` | NCES  | Northern Cagayan Experiment Station |
 | `/ies`  | IES   | Isabela Experiment Station          |
 | `/cvrc` | CVRC  | Cagayan Valley Research Center      |
-| `/scrc` | SCRC  | *(full name to be confirmed)*       |
+| `/scrc` | SCRC  | Southern Cagayan Experiment Station |
 | `/qes`  | QES   | Quirino Experiment Station          |
 
 That list is the current one, not a fixed set — stations can be added or removed at any
@@ -93,8 +93,8 @@ export const STATIONS = [
 
 Add, edit, or delete an entry in `STATIONS`. The switchboard tile, the drawer entry, and
 the route all follow automatically — there is no fixed station count anywhere in the code.
-Station names in that array are the only copy of those names, so correcting `SCRC`'s full
-name, for instance, is a one-line edit there.
+Station names in that array are the only copy of those names, so renaming a station is a
+one-line edit there.
 
 ### Paste in a Power BI embed URL
 
@@ -239,8 +239,9 @@ Design notes, in case you extend it:
 
 For the office to confirm:
 
-- The full official name of **SCRC** (currently a placeholder)
 - Power BI "Publish to web" URLs for each station
+- The station blurbs — only the NCES one came from the office; the rest were drafted here
+  and should be checked before this is shown publicly
 - Final DA logo and Bagong Pilipinas logo image files
 - Whether the contact details — carried over from the RGA footer as defaults — are correct
   for the WMS context

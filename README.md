@@ -200,7 +200,8 @@ src/
     Masthead.jsx         home masthead with logos and the motif wash
     StationTile.jsx      one switch on the home switchboard
     ReportBar.jsx        slim report chrome: home link, identity, drawer trigger
-    StationDrawer.jsx    slide-over station switcher, reachable from any report
+    StationNav.jsx       the hamburger button and the drawer state behind it
+    StationDrawer.jsx    slide-over station switcher, reachable from any page
     DashboardEmbed.jsx   Power BI iframe, or the "coming soon" placeholder
     StatusTag.jsx        the one Live / Coming soon vocabulary
     BrandLogo.jsx        logo image with monogram fallback
@@ -218,8 +219,10 @@ Design notes, in case you extend it:
 - **Home is a switchboard, report pages are almost bare.** There is no persistent
   sidebar. The home page exists to be presented from; a report page gives its width to
   the dashboard and keeps only a slim bar. Switching stations mid-meeting goes through
-  the slide-over drawer behind that bar's "Switch station" button — the same component
-  on desktop and mobile, closable with Esc, the overlay, or by picking a station.
+  the slide-over drawer — the same component on desktop and mobile, closable with Esc,
+  the overlay, or by picking a station. Nothing of it is on screen until the hamburger
+  is pressed: labelled "Switch station" on a report page, icon-only in the masthead
+  corner on home, where the switchboard itself is the primary navigation.
 - **The station count is not fixed.** Never write a number of stations into copy,
   markup, or a comment. Everything maps over `STATIONS`, so the portal works with
   however many entries the config holds.

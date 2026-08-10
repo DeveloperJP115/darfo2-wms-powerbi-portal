@@ -33,6 +33,7 @@ desktop.ini
 # Internal planning docs (kept local, not published)
 WMS_Portal_Claude_Code_Brief.md
 WMS_Portal_Navigation_Prompt.md
+WMS_Portal_Next_Motion_Phase.txt
 
 # Environment
 .env

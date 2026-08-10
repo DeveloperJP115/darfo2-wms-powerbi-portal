@@ -13,7 +13,6 @@ export const SITE = {
 	title: "WMS Analytics Portal",
 	subtitle: "Warehouse Management System — DA-RFO 02",
 	office: "Department of Agriculture Regional Field Office 02",
-	publicAccessNote: "Public access — dashboards are viewable without a login.",
 
 	// Shown on the home page under the hero.
 	intro:

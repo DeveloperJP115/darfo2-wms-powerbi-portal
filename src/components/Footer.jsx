@@ -62,12 +62,6 @@ export default function Footer() {
           </dl>
         </div>
       </div>
-
-      <div className="border-hairline border-t">
-        <p className="text-ink-faint mx-auto max-w-[104rem] px-6 py-7 text-[15px] md:px-10">
-          {SITE.publicAccessNote} Reports are published from Power BI and are read-only.
-        </p>
-      </div>
     </footer>
   );
 }

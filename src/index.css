@@ -175,10 +175,16 @@
   }
 }
 
+/*
+ * `::backdrop` is listed separately on purpose: it is not a descendant of
+ * anything, so `*` does not match it. Without it the drawer's scrim would keep
+ * fading at full length while the panel it belongs to snapped into place.
+ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
-  *::after {
+  *::after,
+  ::backdrop {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

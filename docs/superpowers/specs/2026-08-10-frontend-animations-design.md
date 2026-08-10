@@ -111,15 +111,21 @@ utility rather than a one-off value.
    browsers. Keep the existing three-line `overflow: hidden` lock until tested,
    then remove only if genuinely redundant.
 
-### Hamburger morph
+### Hamburger morph — cut during implementation
 
-The three lines rotate into an X over 200ms, and `aria-label` flips to
-"Close stations menu" while open.
+The plan was for the three lines to rotate into an X over 200ms. **Dropped**, and
+replaced with a filled button while the drawer is open.
 
-This is a partial win by design. On report pages the button sits top-right and
-the drawer opens left, so the morph is visible. On the home masthead the button
-is top-left (`Masthead.jsx:13`) and the drawer covers it, so the morph cannot
-be seen there. Accepted: station switching happens on report pages.
+The reason only became clear once the drawer was modal: a modal `<dialog>` makes
+everything outside it inert, so the button cannot be clicked while the panel is
+up. An X there would look exactly like a close control and do nothing when
+pressed. The filled state says "this is the thing currently open" without
+promising an interaction that cannot happen. Hover styles come off while open
+for the same reason.
+
+It was a weak candidate anyway: on the home masthead the button is top-left
+(`Masthead.jsx:13`) and the open panel covers it, so the morph would have been
+invisible on that page regardless.
 
 ## Verification
 
@@ -135,13 +141,36 @@ There is no test framework in `package.json` and none is being added for this.
   per-report and revocable.
 - Final judgement is a human looking at it in Firefox 153.
 
+### Check reduced motion before debugging any animation
+
+The drawer appeared not to animate at all. It was animating correctly: the
+machine used for review has reduced motion enabled at OS level, and the
+`prefers-reduced-motion` block in `index.css` was crushing every transition to
+`0.01ms`. A suppressed animation is indistinguishable from a broken one by eye.
+
+Two things made it diagnosable. First, an on-page readout of
+`getComputedStyle(dialog)` inside the running app — a computed
+`transition-duration` of `1e-05s` names the cause immediately. Second, a
+standalone test page proving the same CSS animated fine in isolation, which
+ruled out the CSS before any of it was rewritten.
+
+The confusing part was that the scrim *did* fade at full length: `::backdrop` is
+not matched by `*`, `*::before` or `*::after`, so it escaped the reduced-motion
+override. Half-working motion reads as a bug rather than as a setting. That
+selector has been corrected.
+
 ## Commits
 
-Atomic, on `feature/01-frontend-animations`, pushed only on request:
+As landed on `feature/01-frontend-animations`:
 
-1. the `--ease-out-soft` easing token
-2. the report loading state
-3. the `<dialog>` rebuild
-4. the drawer open/close transition
-5. portal removal, if it holds
-6. the hamburger morph
+1. `docs` — this design
+2. `feat(css)` — the `--ease-out-soft` easing token
+3. `feat(embed)` — the report loading state
+4. `refactor(nav)` — the `<dialog>` rebuild, including its motion
+5. `refactor(nav)` — portal and trigger ref dropped, both redundant in the top layer
+6. `fix(css)` — reduced motion honoured on `::backdrop`
+7. `feat(nav)` — the button fills while the drawer is open
+
+The rebuild and its motion landed together rather than as two commits: a dialog
+rebuild without the transition would have been a regression, since the drawer it
+replaced already animated.

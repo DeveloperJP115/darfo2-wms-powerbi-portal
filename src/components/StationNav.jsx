@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 import StationDrawer from "./StationDrawer.jsx";
 
@@ -12,11 +13,13 @@ import StationDrawer from "./StationDrawer.jsx";
  * Focus return is the browser's job now that the drawer is a modal <dialog>,
  * so the trigger no longer needs a ref.
  *
- * The drawer used to be portalled to <body> to escape the report bar, whose
- * backdrop-blur made it the containing block for fixed descendants and clipped
- * the panel to the height of the bar. A modal <dialog> is promoted to the
- * browser's top layer, where the viewport is the containing block no matter
- * what it is nested inside, so the portal is no longer needed.
+ * The drawer is portalled to <body>, and the top layer is not a substitute for
+ * it. While the panel is open the top layer does shield it from the report bar,
+ * whose backdrop-blur makes it the containing block for fixed descendants. But
+ * closing it gives up top-layer membership, and for the rest of the slide-out
+ * the panel is an ordinary fixed element inside that bar — clipped to the height
+ * of it, so the exit never appears. Portalling puts it somewhere with no such
+ * ancestor, which is what makes the close visible.
  */
 export default function StationNav({ showLabel = true, className = "" }) {
   const [open, setOpen] = useState(false);
@@ -58,7 +61,10 @@ export default function StationNav({ showLabel = true, className = "" }) {
         {showLabel && <span className="hidden text-[15px] sm:inline">Switch station</span>}
       </button>
 
-      <StationDrawer open={open} onClose={() => setOpen(false)} />
+      {createPortal(
+        <StationDrawer open={open} onClose={() => setOpen(false)} />,
+        document.body,
+      )}
     </>
   );
 }

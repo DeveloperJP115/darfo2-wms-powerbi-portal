@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import StationDrawer from "./StationDrawer.jsx";
 
@@ -10,14 +9,17 @@ import StationDrawer from "./StationDrawer.jsx";
  * Nothing is on screen until the button is pressed — the drawer is the only
  * navigation chrome in the portal, and it stays out of the way until asked for.
  *
- * The drawer is portalled to <body> because it must size itself against the
- * viewport. The report bar uses backdrop-blur, and an element with a
- * backdrop-filter becomes the containing block for its fixed descendants — left
- * in place, the panel would be trapped inside the height of that bar.
+ * Focus return is the browser's job now that the drawer is a modal <dialog>,
+ * so the trigger no longer needs a ref.
+ *
+ * The drawer used to be portalled to <body> to escape the report bar, whose
+ * backdrop-blur made it the containing block for fixed descendants and clipped
+ * the panel to the height of the bar. A modal <dialog> is promoted to the
+ * browser's top layer, where the viewport is the containing block no matter
+ * what it is nested inside, so the portal is no longer needed.
  */
 export default function StationNav({ showLabel = true, className = "" }) {
   const [open, setOpen] = useState(false);
-  const triggerRef = useRef(null);
   const { pathname } = useLocation();
 
   // Arriving on a new page should never leave the panel hanging open.
@@ -26,7 +28,6 @@ export default function StationNav({ showLabel = true, className = "" }) {
   return (
     <>
       <button
-        ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open stations menu"
@@ -50,10 +51,7 @@ export default function StationNav({ showLabel = true, className = "" }) {
         {showLabel && <span className="hidden text-[15px] sm:inline">Switch station</span>}
       </button>
 
-      {createPortal(
-        <StationDrawer open={open} onClose={() => setOpen(false)} triggerRef={triggerRef} />,
-        document.body,
-      )}
+      <StationDrawer open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

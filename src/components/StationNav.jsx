@@ -27,15 +27,22 @@ export default function StationNav({ showLabel = true, className = "" }) {
 
   return (
     <>
+      {/* The button fills while the drawer is open, to mark it as the thing
+          currently open. Deliberately not a close icon: a modal dialog makes
+          everything outside it inert, so this button cannot be clicked while
+          the panel is up, and an X here would invite a press that does
+          nothing. Hover styles come off while open for the same reason. */}
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open stations menu"
         aria-expanded={open}
         aria-haspopup="dialog"
-        className={`bg-leaf-100 text-leaf-700 hover:bg-leaf-500 inline-flex items-center gap-2.5 rounded-full font-semibold transition-colors hover:text-white ${
-          showLabel ? "px-4 py-2" : "p-3"
-        } ${className}`}
+        className={`inline-flex items-center gap-2.5 rounded-full font-semibold transition-colors ${
+          open
+            ? "bg-leaf-600 text-white"
+            : "bg-leaf-100 text-leaf-700 hover:bg-leaf-500 hover:text-white"
+        } ${showLabel ? "px-4 py-2" : "p-3"} ${className}`}
       >
         <svg
           aria-hidden="true"

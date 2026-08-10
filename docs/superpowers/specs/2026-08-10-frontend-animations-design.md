@@ -103,10 +103,16 @@ utility rather than a one-off value.
 
 ### Two items to verify, not assume
 
-1. **Whether `createPortal` can be removed.** Top-layer elements should escape
-   the `backdrop-filter` containing block that caused the original clipping
-   bug, which would make the portal unnecessary. Verify empirically; if it does
-   not hold, keep the portal. Tidiness does not justify reintroducing that bug.
+1. **Whether `createPortal` can be removed — answered: no, it must stay.**
+   The top layer shields the panel only while it is open. `close()` gives up
+   top-layer membership at once, so for the whole slide-out the panel is an
+   ordinary fixed element inside the report bar and is clipped to the height of
+   it. The exit simply never appears.
+
+   This was initially got wrong. The portal was deleted after checking that the
+   drawer opened correctly and was full height — both true, and both irrelevant,
+   because they only exercise the open state. **Entry and exit have to be
+   checked separately: they do not have the same containing block.**
 2. **Whether `<dialog>` locks body scroll.** Behaviour is not uniform across
    browsers. Keep the existing three-line `overflow: hidden` lock until tested,
    then remove only if genuinely redundant.
@@ -167,9 +173,13 @@ As landed on `feature/01-frontend-animations`:
 2. `feat(css)` — the `--ease-out-soft` easing token
 3. `feat(embed)` — the report loading state
 4. `refactor(nav)` — the `<dialog>` rebuild, including its motion
-5. `refactor(nav)` — portal and trigger ref dropped, both redundant in the top layer
+5. `refactor(nav)` — portal and trigger ref dropped
 6. `fix(css)` — reduced motion honoured on `::backdrop`
 7. `feat(nav)` — the button fills while the drawer is open
+8. `fix(nav)` — the portal restored, since commit 5 broke the slide-out
+
+The trigger ref in commit 5 was correctly removed and stays removed; only the
+portal came back.
 
 The rebuild and its motion landed together rather than as two commits: a dialog
 rebuild without the transition would have been a regression, since the drawer it

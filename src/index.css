@@ -105,6 +105,74 @@
   .card {
     @apply bg-card shadow-card rounded-2xl;
   }
+
+  /*
+   * The station drawer: a modal <dialog>, so it sits in the browser's top layer
+   * and no ancestor can clip it. That matters here — the report bar uses
+   * backdrop-filter, which makes it the containing block for fixed descendants,
+   * and a panel positioned inside it gets trimmed to the height of the bar.
+   *
+   * `display` and `overlay` are discrete properties, so they normally flip
+   * instantly and there is nothing left on screen to animate. `allow-discrete`
+   * is what holds the panel in place long enough to slide out.
+   *
+   * Opening takes longer than closing on purpose: an entrance is worth
+   * watching, an exit is something to get out of the way.
+   */
+  .station-drawer {
+    position: fixed;
+    inset: 0 auto 0 0;
+    flex-direction: column;
+    width: 23rem;
+    max-width: 86vw;
+    /* The browser's own dialog rules size a dialog to its content and cap its
+       height, which beats the insets above. Stating the height outright is the
+       only reliable way to get a full-height panel. */
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    translate: -100% 0;
+    transition:
+      translate 200ms var(--ease-out-soft),
+      display 200ms allow-discrete,
+      overlay 200ms allow-discrete;
+  }
+
+  /* Only when open, so the browser's own `display: none` still hides it when
+     closed — an unconditional `display` here would leave it always on screen. */
+  .station-drawer[open] {
+    display: flex;
+    translate: 0 0;
+    transition-duration: 260ms;
+  }
+
+  .station-drawer::backdrop {
+    background-color: rgb(31 42 36 / 0.4);
+    opacity: 0;
+    transition:
+      opacity 200ms var(--ease-out-soft),
+      display 200ms allow-discrete,
+      overlay 200ms allow-discrete;
+  }
+
+  .station-drawer[open]::backdrop {
+    opacity: 1;
+    transition-duration: 260ms;
+  }
+
+  /* The state to animate *from* on first paint. Without this the panel is
+     already in place by the time the transition would begin. */
+  @starting-style {
+    .station-drawer[open] {
+      translate: -100% 0;
+    }
+
+    .station-drawer[open]::backdrop {
+      opacity: 0;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

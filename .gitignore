@@ -34,6 +34,10 @@ desktop.ini
 WMS_Portal_Claude_Code_Brief.md
 WMS_Portal_Navigation_Prompt.md
 WMS_Portal_Next_Motion_Phase.txt
+WMS_Portal_Friday_Work_Plan.txt
+
+# Local working notes for Claude Code (kept local, not shared)
+CLAUDE.md
 
 # Environment
 .env

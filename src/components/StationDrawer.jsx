@@ -44,12 +44,50 @@ function DrawerItem({ dashboard, onNavigate }) {
 export default function StationDrawer({ open, onClose }) {
   const dialogRef = useRef(null);
 
+  /*
+   * Opening is immediate. Closing is deferred until the slide-out has finished,
+   * because close() removes the panel from the top layer at once and Firefox has
+   * no `overlay` property to defer that — so closing first means the exit is
+   * never seen. Keeping the dialog open while it animates works everywhere.
+   */
   useEffect(() => {
     const dialog = dialogRef.current;
-    if (!dialog) return;
+    if (!dialog) return undefined;
 
-    if (open && !dialog.open) dialog.showModal();
-    else if (!open && dialog.open) dialog.close();
+    if (open) {
+      if (!dialog.open) dialog.showModal();
+      dialog.removeAttribute("data-closing");
+      return undefined;
+    }
+
+    if (!dialog.open) return undefined;
+
+    dialog.setAttribute("data-closing", "");
+
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      dialog.removeAttribute("data-closing");
+      dialog.close();
+    };
+
+    const onTransitionEnd = (event) => {
+      if (event.target === dialog && event.propertyName === "translate") finish();
+    };
+
+    dialog.addEventListener("transitionend", onTransitionEnd);
+
+    // Belt and braces. If the transition is suppressed — reduced motion cuts it
+    // to 0.01ms — or never fires at all, the panel must still close.
+    const fallback = setTimeout(finish, 400);
+
+    return () => {
+      dialog.removeEventListener("transitionend", onTransitionEnd);
+      clearTimeout(fallback);
+      // Interrupted by a re-open: drop the closing state so it slides back in.
+      dialog.removeAttribute("data-closing");
+    };
   }, [open]);
 
   // A modal dialog makes the page behind inert but does not reliably stop it

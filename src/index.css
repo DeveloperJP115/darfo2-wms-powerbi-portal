@@ -112,9 +112,15 @@
    * backdrop-filter, which makes it the containing block for fixed descendants,
    * and a panel positioned inside it gets trimmed to the height of the bar.
    *
-   * `display` and `overlay` are discrete properties, so they normally flip
-   * instantly and there is nothing left on screen to animate. `allow-discrete`
-   * is what holds the panel in place long enough to slide out.
+   * THE EXIT DOES NOT USE `display`/`overlay` WITH allow-discrete, and that is
+   * deliberate. Deferring top-layer removal so an exit can animate requires the
+   * `overlay` property, which Firefox does not support at all — and Firefox is
+   * the browser this portal is presented from. There, a dialog that calls
+   * close() leaves the top layer at once and the slide-out never renders.
+   *
+   * Instead the panel is animated out while it is still open, and close() is
+   * called only once that has finished. StationDrawer.jsx adds data-closing to
+   * drive it. That works in every browser and needs no Chrome-only property.
    *
    * Opening takes longer than closing on purpose: an entrance is worth
    * watching, an exit is something to get out of the way.
@@ -134,10 +140,7 @@
     padding: 0;
     border: 0;
     translate: -100% 0;
-    transition:
-      translate 200ms var(--ease-out-soft),
-      display 200ms allow-discrete,
-      overlay 200ms allow-discrete;
+    transition: translate 260ms var(--ease-out-soft);
   }
 
   /* Only when open, so the browser's own `display: none` still hides it when
@@ -145,21 +148,28 @@
   .station-drawer[open] {
     display: flex;
     translate: 0 0;
-    transition-duration: 260ms;
+  }
+
+  /* Still open, so still in the top layer and still rendered — but on its way
+     out. Quicker than the entrance. */
+  .station-drawer[open][data-closing] {
+    translate: -100% 0;
+    transition-duration: 200ms;
   }
 
   .station-drawer::backdrop {
     background-color: rgb(31 42 36 / 0.4);
     opacity: 0;
-    transition:
-      opacity 200ms var(--ease-out-soft),
-      display 200ms allow-discrete,
-      overlay 200ms allow-discrete;
+    transition: opacity 260ms var(--ease-out-soft);
   }
 
   .station-drawer[open]::backdrop {
     opacity: 1;
-    transition-duration: 260ms;
+  }
+
+  .station-drawer[open][data-closing]::backdrop {
+    opacity: 0;
+    transition-duration: 200ms;
   }
 
   /* The state to animate *from* on first paint. Without this the panel is

@@ -59,6 +59,10 @@ function NotPublished({ dashboard }) {
  *
  * In practice a visitor should never see this at all — the build refuses to
  * produce a bundle with an invalid URL in it. This is the net under that.
+ *
+ * The <code> elements are the one sanctioned break from "monospace is for
+ * station codes only": that rule protects the portal's public surface, and this
+ * block never reaches it.
  */
 function Misconfigured({ dashboard, problem }) {
   return (

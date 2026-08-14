@@ -24,24 +24,29 @@ export const EMBED_URL_PREFIX = "https://app.powerbi.com/view?r=";
  * The wrong values here are not hypothetical. Power BI's own interface offers
  * several links and a full HTML snippet, and only one of them belongs in this
  * config.
+ *
+ * Every reason is phrased as a PREDICATE — it completes a sentence whose subject
+ * is the URL itself, so callers can lead with whatever noun phrase suits them
+ * ("the embedUrl for nces …", "embedUrl …") and still read as English. Do not
+ * start one of these with "this is".
  */
 export function describeEmbedUrlProblem(url) {
   if (typeof url !== "string") {
-    return "embedUrl must be a string.";
+    return "must be a string.";
   }
 
   const trimmed = url.trim();
 
   if (trimmed.includes("<iframe") || trimmed.includes("</iframe")) {
-    return 'this is the whole HTML snippet — paste only the address from src="…".';
+    return 'is the whole HTML snippet — paste only the address from src="…".';
   }
 
   if (trimmed.includes("/groups/")) {
-    return "this is a link to the report inside Power BI, which asks viewers to sign in. Use File › Embed report › Publish to web (public) instead.";
+    return "is a link to the report inside Power BI, which asks viewers to sign in. Use File › Embed report › Publish to web (public) instead.";
   }
 
   if (trimmed.includes("/reportEmbed")) {
-    return "this is the secure embed address, which needs an access token the portal does not have. Use Publish to web (public) instead.";
+    return "is the secure embed address, which needs an access token the portal does not have. Use Publish to web (public) instead.";
   }
 
   /*
@@ -71,17 +76,17 @@ export function describeEmbedUrlProblem(url) {
   }
 
   if (token === "") {
-    return "the token after r= is missing.";
+    return "has nothing after r=, which is the part that identifies the report.";
   }
 
   // Real publish-to-web tokens are long base64url strings — a short one is a
   // copy that got cut off partway.
   if (token.length < 20) {
-    return "the token after r= looks cut off — copy the whole address.";
+    return "has a token after r= that looks cut off — copy the whole address.";
   }
 
   if (!/^[A-Za-z0-9_=-]+$/.test(token)) {
-    return "the token after r= contains characters it should not, so something was mangled in copying.";
+    return "has a token after r= containing characters it should not, so something was mangled in copying.";
   }
 
   return null;
@@ -184,7 +189,8 @@ export function validateConfig(dashboards) {
       error(`${label}: embedUrl must be a string, empty until the report exists.`);
     } else if (embedUrl.trim() !== "") {
       const problem = describeEmbedUrlProblem(embedUrl);
-      if (problem) error(`${label}: ${problem}`);
+      // Named here so the predicate above has a subject to attach to.
+      if (problem) error(`${label}: embedUrl ${problem}`);
     }
   });
 

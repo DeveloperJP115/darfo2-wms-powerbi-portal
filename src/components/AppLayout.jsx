@@ -1,12 +1,23 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import ErrorBoundary from "./ErrorBoundary.jsx";
 import Footer from "./Footer.jsx";
 
 /*
  * The shell is deliberately thin. Home carries its own masthead and a report
  * page carries its own slim bar, so there is no persistent chrome competing
  * with the dashboard for space.
+ *
+ * Only the page is inside the error boundary, so a page that fails to render
+ * still leaves the footer and the skip link standing — the result reads as the
+ * portal having a bad moment rather than the browser giving up.
+ *
+ * The boundary is keyed on the path because a boundary that has caught stays
+ * caught. Without the key, the browser's back button would change the route and
+ * leave the error page on screen for good.
  */
 export default function AppLayout() {
+  const { pathname } = useLocation();
+
   return (
     <div className="flex min-h-screen flex-col">
       <a
@@ -17,7 +28,9 @@ export default function AppLayout() {
       </a>
 
       <main id="content" className="flex-1">
-        <Outlet />
+        <ErrorBoundary key={pathname}>
+          <Outlet />
+        </ErrorBoundary>
       </main>
 
       <Footer />

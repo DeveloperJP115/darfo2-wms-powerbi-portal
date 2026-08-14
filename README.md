@@ -45,8 +45,14 @@ who queries the model. This WMS sits on 14–18 SharePoint lists. If any of them
 supplier names, unit costs, staff names, or quantities the office would not publish
 deliberately, publish-to-web exposes them regardless of what the visuals show.
 
-**Raise this with the office before any report is published to web.** It is far cheaper to
-discuss now than to retract later, and it may change the decision.
+**Raised and answered, 13 August 2026:** the office confirms data privacy is handled within
+the Power BI reports themselves, so the models are not expected to carry personal data.
+
+Keep the distinction in mind when building any new report: the protection has to be in what
+the **model contains**, not in what the visuals **display**. Dropping a column in Power
+Query keeps it out of the published model; hiding it from a visual does not. Pre-aggregating
+in Power Query or a SharePoint view is the strongest version of this — a model holding only
+summaries is safe to expose no matter who queries it.
 
 This is a **documented, deliberate choice — not an oversight.** If the office later
 requires access control, that becomes a future backend effort (Power BI "Embed for your

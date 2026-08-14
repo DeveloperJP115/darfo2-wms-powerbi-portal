@@ -1,4 +1,5 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { useLayoutEffect } from "react";
+import { Outlet, useLocation, useNavigationType } from "react-router-dom";
 import ErrorBoundary from "./ErrorBoundary.jsx";
 import Footer from "./Footer.jsx";
 
@@ -17,6 +18,26 @@ import Footer from "./Footer.jsx";
  */
 export default function AppLayout() {
   const { pathname } = useLocation();
+  const navigationType = useNavigationType();
+
+  /*
+   * A new page starts at the top.
+   *
+   * Nothing navigates in the document sense here, so the browser keeps the old
+   * scroll offset: picking a station from the bottom of the switchboard used to
+   * land the reader at the footer of the report page, 366px down.
+   *
+   * POP — the back and forward buttons — is deliberately left alone. There the
+   * reader expects to return to where they were, not to be thrown to the top.
+   *
+   * A layout effect rather than a plain one, so the reset happens before paint.
+   * The cross-fade would hide a one-frame flash today, but this should not
+   * quietly depend on an animation that might be tuned or removed later.
+   */
+  useLayoutEffect(() => {
+    if (navigationType === "POP") return;
+    window.scrollTo(0, 0);
+  }, [pathname, navigationType]);
 
   return (
     <div className="flex min-h-screen flex-col">

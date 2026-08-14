@@ -28,8 +28,13 @@ export default function AppLayout() {
       </a>
 
       <main id="content" className="flex-1">
+        {/* The wrapper animates rather than <main>, and needs no key of its own:
+            the boundary above is already keyed on the path, so navigating
+            unmounts this whole subtree and the arrival animation restarts. */}
         <ErrorBoundary key={pathname}>
-          <Outlet />
+          <div className="animate-page-enter">
+            <Outlet />
+          </div>
         </ErrorBoundary>
       </main>
 

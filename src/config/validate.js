@@ -130,9 +130,18 @@ export function validateConfig(dashboards) {
   const shortOwners = new Map();
 
   dashboards.forEach((dashboard, index) => {
-    // Name the entry by whatever it does have, so the message is useful even
-    // when the field we would normally quote is the missing one.
-    const label = dashboard?.short || dashboard?.slug || `entry ${index + 1}`;
+    /*
+     * Name the entry by whatever it does have, so the message stays useful even
+     * when the field we would normally quote is the missing one.
+     *
+     * Short code AND slug together, because either alone can be ambiguous: two
+     * entries sharing a short code would otherwise both be reported under the
+     * same name, which is exactly the case being complained about.
+     */
+    const label =
+      [dashboard?.short, dashboard?.slug && `(${dashboard.slug})`]
+        .filter(Boolean)
+        .join(" ") || `entry ${index + 1}`;
 
     if (!dashboard || typeof dashboard !== "object") {
       error(`${label}: is not an object.`);

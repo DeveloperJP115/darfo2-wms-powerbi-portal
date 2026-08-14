@@ -41,7 +41,7 @@ export default function StationNav({ showLabel = true, className = "" }) {
         aria-label="Open stations menu"
         aria-expanded={open}
         aria-haspopup="dialog"
-        className={`inline-flex items-center gap-2.5 rounded-full font-semibold transition-colors ${
+        className={`inline-flex items-center gap-2.5 rounded-full font-semibold transition active:scale-95 active:duration-75 ${
           open
             ? "bg-leaf-600 text-white"
             : "bg-leaf-100 text-leaf-700 hover:bg-leaf-500 hover:text-white"

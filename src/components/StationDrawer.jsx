@@ -23,10 +23,13 @@ function DrawerItem({ dashboard, onNavigate }) {
       to={`/${dashboard.slug}`}
       onClick={onNavigate}
       className={({ isActive }) =>
+        /* A row, so it flashes rather than shrinks — scaling a full-width list
+           item reads as a glitch. `isActive` here is the routing state, not the
+           CSS :active in `active:`, despite the names. */
         `block border-l-2 py-3 pr-3 pl-4 transition-colors ${
           isActive
             ? "border-leaf-500 bg-leaf-100 text-leaf-700"
-            : "hover:bg-canvas border-transparent"
+            : "hover:bg-canvas active:bg-leaf-100 border-transparent"
         }`
       }
     >
@@ -142,7 +145,7 @@ export default function StationDrawer({ open, onClose }) {
           type="button"
           onClick={onClose}
           aria-label="Close stations"
-          className="text-ink-soft hover:bg-canvas hover:text-ink -mr-1 shrink-0 rounded-full p-2 transition-colors"
+          className="text-ink-soft hover:bg-canvas hover:text-ink -mr-1 shrink-0 rounded-full p-2 transition active:scale-90 active:duration-75"
         >
           <svg
             aria-hidden="true"

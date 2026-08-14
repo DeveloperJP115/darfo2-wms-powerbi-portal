@@ -8,7 +8,9 @@
     "dev": "vite",
     "build": "node scripts/check-config.mjs && vite build",
     "preview": "vite preview",
-    "check-config": "node scripts/check-config.mjs"
+    "check-config": "node scripts/check-config.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "react": "^19.2.8",
@@ -19,6 +21,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "^6.0.4",
     "tailwindcss": "^4.3.3",
-    "vite": "^8.1.5"
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10"
   }
 }

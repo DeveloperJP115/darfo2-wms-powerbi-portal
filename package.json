@@ -6,8 +6,9 @@
   "description": "Public Power BI dashboard portal for the DA-RFO 02 Warehouse Management System",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "node scripts/check-config.mjs && vite build",
+    "preview": "vite preview",
+    "check-config": "node scripts/check-config.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

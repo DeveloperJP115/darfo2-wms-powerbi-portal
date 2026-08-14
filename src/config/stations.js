@@ -9,6 +9,8 @@
  * entries STATIONS holds, so never write a count into copy or markup.
  */
 
+import { isValidEmbedUrl } from "./validate.js";
+
 export const SITE = {
 	title: "WMS Analytics Portal",
 	subtitle: "Warehouse Management System — DA-RFO 02",
@@ -117,8 +119,14 @@ export const DASHBOARDS = REGIONAL_OVERVIEW.enabled
 	? [REGIONAL_OVERVIEW, ...STATIONS]
 	: STATIONS;
 
-/** A dashboard is live once someone has pasted an embed URL into it. */
-export const isLive = (dashboard) => Boolean(dashboard?.embedUrl?.trim());
+/**
+ * A dashboard is live once it holds an embed URL the portal can actually render.
+ *
+ * A filled-in but unusable URL is deliberately NOT live: otherwise a tile would
+ * advertise a working report and then show an empty frame. Such a URL is not
+ * silently treated as missing either — DashboardEmbed says what is wrong with it.
+ */
+export const isLive = (dashboard) => isValidEmbedUrl(dashboard?.embedUrl);
 
 /** Look up a dashboard by its route slug. Returns undefined for unknown slugs. */
 export const findDashboard = (slug) => DASHBOARDS.find((d) => d.slug === slug);

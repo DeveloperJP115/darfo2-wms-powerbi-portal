@@ -1,0 +1,41 @@
+# Runs the tests and a production build on every push and pull request.
+#
+# `npm run build` checks the dashboard config before Vite starts, so this also
+# catches a bad slug or the wrong kind of Power BI link before Vercel would.
+#
+# Node 22 is the floor Vite 8 states (^20.19.0 || >=22.12.0); development happens
+# on 24, and pinning the major here keeps CI from drifting onto something the
+# toolchain has not been tested against.
+
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+# A newer push makes an in-flight run irrelevant, so don't pay for both.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build

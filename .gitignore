@@ -36,8 +36,9 @@ WMS_Portal_Navigation_Prompt.md
 WMS_Portal_Next_Motion_Phase.txt
 WMS_Portal_Friday_Work_Plan.txt
 
-# Local working notes for Claude Code (kept local, not shared)
-CLAUDE.md
+# Local working notes for Claude Code (kept local, not shared).
+# The plain CLAUDE.md name is left free for a committed version on hand-over.
+CLAUDE.local.md
 
 # Environment
 .env

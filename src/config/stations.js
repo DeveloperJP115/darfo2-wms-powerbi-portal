@@ -9,6 +9,8 @@
  * entries STATIONS holds, so never write a count into copy or markup.
  */
 
+import { isValidEmbedUrl } from "./validate.js";
+
 export const SITE = {
 	title: "WMS Analytics Portal",
 	subtitle: "Warehouse Management System — DA-RFO 02",
@@ -51,6 +53,16 @@ export const SITE = {
  *   https://app.powerbi.com/view?r=<LONG_TOKEN>
  * Leave it as an empty string until the report is ready — the station page then
  * renders a "Dashboard coming soon" card instead of a broken iframe.
+ *
+ * blurb: deliberately empty for now. The tiles and report pages simply omit it,
+ * so pasting text back in is all it takes to bring them back. Only the NCES
+ * wording ever came from the office; the rest was drafted here and should not go
+ * public unchecked, and one station describing itself while the others stay
+ * silent would look like a fault rather than a choice.
+ *
+ * The office-supplied NCES text, kept so it is not lost:
+ *   "Seed inventory, deliveries, withdrawals, germination testing, and
+ *    environmental logs for NCES."
  */
 export const STATIONS = [
 	{
@@ -58,40 +70,35 @@ export const STATIONS = [
 		short: "NCES",
 		name: "Northern Cagayan Experiment Station",
 		embedUrl: "",
-		blurb:
-			"Seed inventory, deliveries, withdrawals, germination testing, and environmental logs for NCES.",
+		blurb: "",
 	},
 	{
 		slug: "ies",
 		short: "IES",
 		name: "Isabela Experiment Station",
 		embedUrl: "",
-		blurb:
-			"Warehouse stock movement and storage conditions for the Isabela station.",
+		blurb: "",
 	},
 	{
 		slug: "cvrc",
 		short: "CVRC",
 		name: "Cagayan Valley Research Center",
 		embedUrl: "",
-		blurb:
-			"Seed and input inventory for the regional research center.",
+		blurb: "",
 	},
 	{
 		slug: "scrc",
 		short: "SCRC",
 		name: "Southern Cagayan Experiment Station",
 		embedUrl: "",
-		blurb:
-			"Warehouse stock movement and storage conditions for the Southern Cagayan station.",
+		blurb: "",
 	},
 	{
 		slug: "qes",
 		short: "QES",
 		name: "Quirino Experiment Station",
 		embedUrl: "",
-		blurb:
-			"Warehouse stock movement and storage conditions for the Quirino station.",
+		blurb: "",
 	},
 ];
 
@@ -105,8 +112,7 @@ export const REGIONAL_OVERVIEW = {
 	short: "ALL",
 	name: "All Stations — Regional Overview",
 	embedUrl: "",
-	blurb:
-		"Harmonized roll-up of every station for FOD-level reporting across the region.",
+	blurb: "",
 };
 
 /**
@@ -117,8 +123,14 @@ export const DASHBOARDS = REGIONAL_OVERVIEW.enabled
 	? [REGIONAL_OVERVIEW, ...STATIONS]
 	: STATIONS;
 
-/** A dashboard is live once someone has pasted an embed URL into it. */
-export const isLive = (dashboard) => Boolean(dashboard?.embedUrl?.trim());
+/**
+ * A dashboard is live once it holds an embed URL the portal can actually render.
+ *
+ * A filled-in but unusable URL is deliberately NOT live: otherwise a tile would
+ * advertise a working report and then show an empty frame. Such a URL is not
+ * silently treated as missing either — DashboardEmbed says what is wrong with it.
+ */
+export const isLive = (dashboard) => isValidEmbedUrl(dashboard?.embedUrl);
 
 /** Look up a dashboard by its route slug. Returns undefined for unknown slugs. */
 export const findDashboard = (slug) => DASHBOARDS.find((d) => d.slug === slug);

@@ -14,7 +14,7 @@ export default function ReportBar({ dashboard }) {
         <div className="flex min-w-0 items-center gap-4">
           <Link
             to="/"
-            className="text-ink-soft hover:text-leaf-700 hover:bg-canvas -ml-2 inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-[15px] font-semibold transition-colors"
+            className="text-ink-soft hover:text-leaf-700 hover:bg-canvas -ml-2 inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-[15px] font-semibold transition active:scale-95 active:duration-75"
           >
             <svg
               aria-hidden="true"

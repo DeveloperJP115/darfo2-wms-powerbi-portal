@@ -34,6 +34,26 @@ login.** That is acceptable and intentional for this portal *for now*: it mirror
 RGA works, and the office wants a frictionless presentation URL. But it does mean the
 warehouse data embedded here is public.
 
+**It goes further than "the data is public", and this is the part worth reading twice.**
+Microsoft's own documentation states:
+
+> It includes viewing detail-level data that your reports aggregate. As a result, anyone
+> can access the underlying data in your model even if your report does not display it.
+
+So a report showing only regional totals still exposes **every underlying row** to anyone
+who queries the model. This WMS sits on 14–18 SharePoint lists. If any of them hold
+supplier names, unit costs, staff names, or quantities the office would not publish
+deliberately, publish-to-web exposes them regardless of what the visuals show.
+
+**Raised and answered, 13 August 2026:** the office confirms data privacy is handled within
+the Power BI reports themselves, so the models are not expected to carry personal data.
+
+Keep the distinction in mind when building any new report: the protection has to be in what
+the **model contains**, not in what the visuals **display**. Dropping a column in Power
+Query keeps it out of the published model; hiding it from a visual does not. Pre-aggregating
+in Power Query or a SharePoint view is the strongest version of this — a model holding only
+summaries is safe to expose no matter who queries it.
+
 This is a **documented, deliberate choice — not an oversight.** If the office later
 requires access control, that becomes a future backend effort (Power BI "Embed for your
 organization" + Azure AD, or a gated host) and is explicitly out of scope for this
@@ -41,6 +61,21 @@ repository.
 
 Nothing secret lives in this codebase. The embed URLs are public tokens by definition,
 which is why they sit in plain config rather than environment variables.
+
+### Two more publish-to-web facts that shape what you can promise
+
+**Data is cached for one hour** from the moment it is retrieved. A dashboard on the
+projector can be an hour behind — and because each element caches independently, during a
+refresh a viewer can see *a mix of current and previous values on the same screen*.
+Microsoft explicitly does not recommend publish-to-web for data that refreshes often.
+Nothing is shown on the page about this yet; that was considered and deliberately deferred
+until a real report exists to be wrong about.
+
+**Not supported by publish-to-web**, for whoever builds the reports: row-level security,
+DirectQuery, live connections, shared semantic models in another workspace, report-level
+DAX measures, R and Python visuals, paginated reports, and **mobile layout views**. That
+last one means a report on a phone is the desktop layout scaled down — be honest about
+that in any claim about mobile support.
 
 ---
 
@@ -108,6 +143,18 @@ one-line edit there.
 *"Dashboard coming soon"* placeholder card instead of a broken iframe — no error, no blank
 page. So stations can go live before their reports are ready.
 
+**A wrong `embedUrl` will not deploy.** Power BI offers several links and only one of them
+works here, so the config is checked before the site is built:
+
+- `npm run build` refuses to build and names the problem — a pasted `<iframe>` snippet, an
+  authenticated `/groups/…` link, the token-based `/reportEmbed` endpoint, a truncated
+  token. Nothing invalid reaches Vercel.
+- While `npm run dev` is running, the same problems appear in the browser console.
+- The station page itself says the report is unavailable, and when running locally it also
+  names the file to fix and what is wrong with the link.
+
+Run `npm run check-config` on its own if you just want to check the config.
+
 ### Add the logo assets
 
 Logos are plain `<img>` tags pointing at files in `/public`. Drop the real images in at
@@ -139,7 +186,8 @@ Every color, typeface, and shadow is a token in the `@theme` block at the top of
 
 ## Running locally
 
-Requires Node.js 18 or newer.
+**Requires Node.js 20.19+ or 22.12+**, which is what Vite 8 states. Development happens on
+Node 24 and CI runs 22.
 
 ```bash
 npm install
@@ -149,13 +197,28 @@ npm run dev      # Vite dev server, usually http://localhost:5173
 To check a production build the way Vercel will build it:
 
 ```bash
-npm run build    # outputs to dist/
+npm run build    # checks the config, then outputs to dist/
 npm run preview  # serves dist/ locally
 ```
+
+The rest:
+
+```bash
+npm test           # the config test suite, about a fifth of a second
+npm run test:watch # the same, re-running as you edit
+npm run check-config  # validate stations.js without building
+```
+
+One Windows note: stop the dev server before running `npm ci`. It holds
+`lightningcss.win32-x64-msvc.node` open, and the install fails with `EPERM` trying to
+replace it. This does not affect CI, which runs on Linux.
 
 ---
 
 ## Deploying to Vercel
+
+**Not deployed yet** as of 13 August 2026 — still in development. The configuration below
+is ready for the first deploy.
 
 Zero-config for a Vite SPA: import the repository in Vercel and it detects Vite, builds
 with `npm run build`, and serves `dist/`.
@@ -181,12 +244,22 @@ can resolve it. Don't remove this file.
 | ---------- | --------------------------------------------- |
 | Build tool | Vite                                          |
 | Framework  | React, **plain JavaScript / JSX** (no TypeScript) |
-| Styling    | Tailwind CSS                                  |
-| Routing    | React Router (`react-router-dom`)             |
+| Styling    | Tailwind CSS v4, CSS-first (no `tailwind.config.js`) |
+| Routing    | React Router (`react-router-dom`), `<BrowserRouter>` |
+| Tests      | Vitest, no extra config — it reads `vite.config.js` |
+| CI         | GitHub Actions: test + build on every push    |
 | Hosting    | Vercel (static)                               |
 | Backend    | None                                          |
 
 Deliberately **not** Next.js, and deliberately not TypeScript.
+
+There are **no runtime dependencies beyond React, React DOM and React Router**. The bundle
+is around 253 kB. Adding an animation library, a UI kit, or a state manager needs
+justifying against that — the motion in this portal is all native CSS.
+
+`<BrowserRouter>` is deliberate rather than incidental. `createBrowserRouter` plus
+`<RouterProvider>` costs roughly **53 kB** of loader and action machinery this portal never
+uses. It was tried once to get React Router's `viewTransition` support and reverted.
 
 ---
 
@@ -194,15 +267,19 @@ Deliberately **not** Next.js, and deliberately not TypeScript.
 
 ```
 src/
-  config/stations.js     the only file you edit for content
+  config/
+    stations.js          the only file you edit for content
+    validate.js          what counts as a valid station and embed URL
+    stations.test.js     44 cases over the above
   components/
-    AppLayout.jsx        thin shell: main + footer, skip link
+    AppLayout.jsx        thin shell: main + footer, skip link, scroll reset
+    ErrorBoundary.jsx    turns a render fault into a page, not a blank screen
     Masthead.jsx         home masthead with logos and the motif wash
     StationTile.jsx      one switch on the home switchboard
     ReportBar.jsx        slim report chrome: home link, identity, drawer trigger
     StationNav.jsx       the hamburger button and the drawer state behind it
     StationDrawer.jsx    slide-over station switcher, reachable from any page
-    DashboardEmbed.jsx   Power BI iframe, or the "coming soon" placeholder
+    DashboardEmbed.jsx   the report, "coming soon", or "that link won't work"
     StatusTag.jsx        the one Live / Coming soon vocabulary
     BrandLogo.jsx        logo image with monogram fallback
     Botanical.jsx        the seed-leaf motif and watermark
@@ -211,7 +288,11 @@ src/
     Home.jsx             masthead plus the station switchboard
     DashboardPage.jsx    the /:slug route
     NotFound.jsx         unknown slug or unknown path
-  index.css              design tokens (@theme) — palette and type live here
+  index.css              design tokens (@theme) — palette, type and motion
+scripts/
+  check-config.mjs       the build gate; plain Node, no bundling
+.github/workflows/
+  ci.yml                 install, test, build
 ```
 
 Design notes, in case you extend it:
@@ -235,6 +316,16 @@ Design notes, in case you extend it:
   behind an unpublished dashboard. Adding a third use turns it into wallpaper.
 - **Type runs large on purpose.** The venue is a projector in a meeting room, and the
   extra size and spacing are what keep the density friendly.
+- **Motion is native CSS, and every transition respects `prefers-reduced-motion`.** No
+  animation carries information on its own, so the portal reads identically with motion
+  switched off. Note `::backdrop` is listed separately in that media query — a universal
+  selector does not match it, which silently exempts the drawer scrim.
+- **Check browser features against Firefox specifically, not "modern browsers".** The
+  portal is presented from Firefox. Two examples already paid for: scroll-driven
+  animations are still behind a flag there, and the CSS `overlay` property is **not
+  supported at all** — which is why the drawer animates out *while still open* and calls
+  `close()` afterwards, rather than relying on the top layer to defer its removal. Verify
+  the exit in both browsers, not just the entrance; they have different failure modes.
 
 ---
 
@@ -248,16 +339,25 @@ For the office to confirm:
 - Final DA logo and Bagong Pilipinas logo image files
 - Whether the contact details — carried over from the RGA footer as defaults — are correct
   for the WMS context
+- **`SCRC` does not abbreviate its own name.** "Southern Cagayan Experiment Station" would
+  give `SCES`. Either the code or the name is wrong, and only the office knows which
 
 The combined **All Stations / Regional Overview** route is built and enabled, with an
 empty embed slot waiting for its report. Set `REGIONAL_OVERVIEW.enabled` to `false` in the
 config to hide it from the nav and home page.
 
-One dependency note: `npm audit` reports a high-severity React Router advisory
-([GHSA-qwww-vcr4-c8h2](https://github.com/advisories/GHSA-qwww-vcr4-c8h2)) affecting RSC
-mode. This portal is a client-side SPA with no server, no RSC, and no router actions, so
-the affected code path is never executed. The only remediation npm offers is a downgrade,
-so the version is left as-is deliberately. Do not run `npm audit fix --force` here.
+One dependency note, rechecked 13 August 2026. The React Router advisory this section used
+to describe ([GHSA-qwww-vcr4-c8h2](https://github.com/advisories/GHSA-qwww-vcr4-c8h2)) **no
+longer appears** — `react-router-dom@7.18.2` is past it.
+
+What `npm audit` reports now is one high-severity item in
+[`nanoid`](https://github.com/advisories/GHSA-2v37-7h3g-55p8), reached through
+`vite → postcss`. It is **dev tooling only** — `npm ls nanoid --omit=dev` comes back empty,
+so it never reaches the built site and cannot affect a visitor.
+
+Still **do not run `npm audit fix --force`**: it is free to make breaking major-version
+changes to the toolchain. A plain `npm audit fix` for this one would only be a patch bump
+to a dev dependency, which is harmless if you want the report clean.
 
 ---
 

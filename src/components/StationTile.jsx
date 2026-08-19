@@ -30,7 +30,11 @@ export default function StationTile({ dashboard, wide = false }) {
   return (
     <Link
       to={`/${dashboard.slug}`}
-      className={`card group hover:ring-leaf-400/40 flex h-full flex-col ring-1 ring-transparent transition duration-200 hover:-translate-y-1 hover:shadow-lift ${
+      /* Pressing shrinks the card slightly and faster than it lifts: an
+         acknowledgement should feel immediate, where a hover can be leisurely.
+         On a touchscreen there is no hover at all, so this is the only feedback
+         a tap gets before the page changes. */
+      className={`card group hover:ring-leaf-400/40 flex h-full flex-col ring-1 ring-transparent transition duration-200 hover:-translate-y-1 hover:shadow-lift active:scale-[0.98] active:duration-75 ${
         wide ? "p-8 md:p-11" : "p-8"
       }`}
     >

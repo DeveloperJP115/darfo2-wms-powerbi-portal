@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 import StationDrawer from "./StationDrawer.jsx";
@@ -10,14 +10,19 @@ import StationDrawer from "./StationDrawer.jsx";
  * Nothing is on screen until the button is pressed — the drawer is the only
  * navigation chrome in the portal, and it stays out of the way until asked for.
  *
- * The drawer is portalled to <body> because it must size itself against the
- * viewport. The report bar uses backdrop-blur, and an element with a
- * backdrop-filter becomes the containing block for its fixed descendants — left
- * in place, the panel would be trapped inside the height of that bar.
+ * Focus return is the browser's job now that the drawer is a modal <dialog>,
+ * so the trigger no longer needs a ref.
+ *
+ * The drawer is portalled to <body>, and the top layer is not a substitute for
+ * it. While the panel is open the top layer does shield it from the report bar,
+ * whose backdrop-blur makes it the containing block for fixed descendants. But
+ * closing it gives up top-layer membership, and for the rest of the slide-out
+ * the panel is an ordinary fixed element inside that bar — clipped to the height
+ * of it, so the exit never appears. Portalling puts it somewhere with no such
+ * ancestor, which is what makes the close visible.
  */
 export default function StationNav({ showLabel = true, className = "" }) {
   const [open, setOpen] = useState(false);
-  const triggerRef = useRef(null);
   const { pathname } = useLocation();
 
   // Arriving on a new page should never leave the panel hanging open.
@@ -25,16 +30,22 @@ export default function StationNav({ showLabel = true, className = "" }) {
 
   return (
     <>
+      {/* The button fills while the drawer is open, to mark it as the thing
+          currently open. Deliberately not a close icon: a modal dialog makes
+          everything outside it inert, so this button cannot be clicked while
+          the panel is up, and an X here would invite a press that does
+          nothing. Hover styles come off while open for the same reason. */}
       <button
-        ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open stations menu"
         aria-expanded={open}
         aria-haspopup="dialog"
-        className={`bg-leaf-100 text-leaf-700 hover:bg-leaf-500 inline-flex items-center gap-2.5 rounded-full font-semibold transition-colors hover:text-white ${
-          showLabel ? "px-4 py-2" : "p-3"
-        } ${className}`}
+        className={`inline-flex items-center gap-2.5 rounded-full font-semibold transition active:scale-95 active:duration-75 ${
+          open
+            ? "bg-leaf-600 text-white"
+            : "bg-leaf-100 text-leaf-700 hover:bg-leaf-500 hover:text-white"
+        } ${showLabel ? "px-4 py-2" : "p-3"} ${className}`}
       >
         <svg
           aria-hidden="true"
@@ -51,7 +62,7 @@ export default function StationNav({ showLabel = true, className = "" }) {
       </button>
 
       {createPortal(
-        <StationDrawer open={open} onClose={() => setOpen(false)} triggerRef={triggerRef} />,
+        <StationDrawer open={open} onClose={() => setOpen(false)} />,
         document.body,
       )}
     </>

@@ -16,7 +16,7 @@ export default function NotFound() {
 
       <Link
         to="/"
-        className="bg-leaf-600 hover:bg-leaf-700 mt-10 inline-flex items-center rounded-full px-6 py-3 font-semibold text-white transition-colors"
+        className="bg-leaf-600 hover:bg-leaf-700 mt-10 inline-flex items-center rounded-full px-6 py-3 font-semibold text-white transition active:scale-95 active:duration-75"
       >
         Go to the home page
       </Link>

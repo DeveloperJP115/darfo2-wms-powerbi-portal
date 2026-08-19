@@ -44,3 +44,6 @@ CLAUDE.local.md
 .env
 .env.*
 !.env.example
+
+# Visual brainstorming companion (superpowers) — local session files.
+.superpowers/

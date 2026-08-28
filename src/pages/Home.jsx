@@ -22,7 +22,7 @@ export default function Home() {
           <section key={group.id} className="mt-12">
             <h2 className="eyebrow text-green-700">{group.label}</h2>
 
-            <ul className="mt-5 grid gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <ul className="mt-5 grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(100%,320px),320px))]">
               {officesInGroup(group.id).map((office) => (
                 <li key={office.slug}>
                   <OfficeTile office={office} />

@@ -105,55 +105,53 @@ export function isValidEmbedUrl(url) {
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
 
 /**
- * Everything wrong with a list of dashboards, worst first.
+ * Everything wrong with the office config, worst first.
  *
  * Each problem is `{ level, message }`. An `error` will break the portal for a
  * visitor and fails the build; a `warning` is a mistake worth fixing that still
  * renders, so it is reported without blocking anything. Keeping those apart is
  * what stops the build gate becoming something people route around.
  *
- * Pass the DASHBOARDS export — the overview belongs in the same list, because a
- * station slug colliding with the overview slug is exactly the sort of clash
- * that needs catching.
+ * `groupIds` is passed in rather than imported, because this module deliberately
+ * imports nothing from the config. Pass GROUPS.map(g => g.id). Omit it and the
+ * group value is still required but is not checked against a list — which is
+ * what the dev console wants before it has the groups to hand.
  */
-export function validateConfig(dashboards) {
+export function validateConfig(offices, groupIds = []) {
   const problems = [];
   const error = (message) => problems.push({ level: "error", message });
   const warning = (message) => problems.push({ level: "warning", message });
 
-  if (!Array.isArray(dashboards)) {
-    error("DASHBOARDS is not an array.");
+  if (!Array.isArray(offices)) {
+    error("OFFICES is not an array.");
     return problems;
   }
 
-  if (dashboards.length === 0) {
-    error("DASHBOARDS is empty, so the portal has nothing to show.");
+  if (offices.length === 0) {
+    error("OFFICES is empty, so the portal has nothing to show.");
     return problems;
   }
 
   const slugOwners = new Map();
-  const shortOwners = new Map();
+  const codeOwners = new Map();
 
-  dashboards.forEach((dashboard, index) => {
+  offices.forEach((office, index) => {
     /*
      * Name the entry by whatever it does have, so the message stays useful even
-     * when the field we would normally quote is the missing one.
-     *
-     * Short code AND slug together, because either alone can be ambiguous: two
-     * entries sharing a short code would otherwise both be reported under the
-     * same name, which is exactly the case being complained about.
+     * when the field we would normally quote is the missing one. Code AND slug
+     * together, because either alone can be ambiguous — two entries sharing a
+     * code would otherwise both be reported under the same name.
      */
     const label =
-      [dashboard?.short, dashboard?.slug && `(${dashboard.slug})`]
-        .filter(Boolean)
-        .join(" ") || `entry ${index + 1}`;
+      [office?.code, office?.slug && `(${office.slug})`].filter(Boolean).join(" ") ||
+      `entry ${index + 1}`;
 
-    if (!dashboard || typeof dashboard !== "object") {
+    if (!office || typeof office !== "object") {
       error(`${label}: is not an object.`);
       return;
     }
 
-    const { slug, short, name, embedUrl } = dashboard;
+    const { slug, code, name, group, reports } = office;
 
     if (typeof slug !== "string" || slug.trim() === "") {
       error(`${label}: has no slug, so it cannot have a page.`);
@@ -173,25 +171,82 @@ export function validateConfig(dashboards) {
       error(`${label}: has no name, so its tile and heading would be blank.`);
     }
 
-    if (typeof short !== "string" || short.trim() === "") {
-      warning(`${label}: has no short code, so its tile leads with nothing.`);
-    } else if (shortOwners.has(short)) {
+    if (typeof code !== "string" || code.trim() === "") {
+      warning(`${label}: has no code, so its tile leads with nothing.`);
+    } else if (codeOwners.has(code)) {
       warning(
-        `short code "${short}" is used by both ${shortOwners.get(short)} and ${label}, which reads as a duplicate.`,
+        `code "${code}" is used by both ${codeOwners.get(code)} and ${label}, which reads as a duplicate.`,
       );
     } else {
-      shortOwners.set(short, label);
+      codeOwners.set(code, label);
     }
 
-    // An empty embedUrl is the documented way to say "not published yet", so it
-    // is deliberately not a problem. Only a filled-in one has to be usable.
-    if (typeof embedUrl !== "string") {
-      error(`${label}: embedUrl must be a string, empty until the report exists.`);
-    } else if (embedUrl.trim() !== "") {
-      const problem = describeEmbedUrlProblem(embedUrl);
-      // Named here so the predicate above has a subject to attach to.
-      if (problem) error(`${label}: embedUrl ${problem}`);
+    /*
+     * A group that is not in GROUPS is the nastiest mistake this file can hold:
+     * the office vanishes from the switchboard and the rail without anything
+     * throwing, because both render group by group.
+     */
+    if (typeof group !== "string" || group.trim() === "") {
+      error(`${label}: has no group, so it would not appear under any heading.`);
+    } else if (groupIds.length > 0 && !groupIds.includes(group)) {
+      error(
+        `${label}: group "${group}" is not one of ${groupIds.join(", ")}, so it would not appear under any heading.`,
+      );
     }
+
+    if (!Array.isArray(reports)) {
+      error(`${label}: reports must be an array, empty until a report exists.`);
+      return;
+    }
+
+    // A normal state during rollout, not a fault. The office page says so.
+    if (reports.length === 0) {
+      warning(`${label}: has no reports yet, so its page says nothing is published.`);
+      return;
+    }
+
+    const reportSlugOwners = new Map();
+
+    reports.forEach((report, reportIndex) => {
+      const reportLabel = `${label} › ${
+        report?.name || report?.slug || `report ${reportIndex + 1}`
+      }`;
+
+      if (!report || typeof report !== "object") {
+        error(`${reportLabel}: is not an object.`);
+        return;
+      }
+
+      if (typeof report.slug !== "string" || report.slug.trim() === "") {
+        error(`${reportLabel}: has no slug, so it cannot have a page.`);
+      } else if (!SLUG_PATTERN.test(report.slug)) {
+        error(
+          `${reportLabel}: slug "${report.slug}" must use only lowercase letters, digits and hyphens.`,
+        );
+      } else if (reportSlugOwners.has(report.slug)) {
+        // Scoped to this office: two offices sharing a report slug is fine,
+        // because the route carries the office as well.
+        error(
+          `${label}: slug "${report.slug}" is used by two of its reports — only the first is reachable.`,
+        );
+      } else {
+        reportSlugOwners.set(report.slug, reportLabel);
+      }
+
+      if (typeof report.name !== "string" || report.name.trim() === "") {
+        error(`${reportLabel}: has no name, so its tab would be blank.`);
+      }
+
+      // An empty embedUrl is the documented way to say "not published yet", so
+      // it is deliberately not a problem. Only a filled-in one has to be usable.
+      if (typeof report.embedUrl !== "string") {
+        error(`${reportLabel}: embedUrl must be a string, empty until the report exists.`);
+      } else if (report.embedUrl.trim() !== "") {
+        const problem = describeEmbedUrlProblem(report.embedUrl);
+        // Named here so the predicate has a subject to attach to.
+        if (problem) error(`${reportLabel}: embedUrl ${problem}`);
+      }
+    });
   });
 
   // Errors first so the important ones are read even if the list is long.
@@ -202,5 +257,5 @@ export function validateConfig(dashboards) {
 }
 
 /** Just the blocking ones, for the build gate. */
-export const configErrors = (dashboards) =>
-  validateConfig(dashboards).filter((problem) => problem.level === "error");
+export const configErrors = (offices, groupIds) =>
+  validateConfig(offices, groupIds).filter((problem) => problem.level === "error");

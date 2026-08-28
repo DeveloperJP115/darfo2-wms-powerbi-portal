@@ -71,7 +71,7 @@
    * layout and says nothing about the cause.
    */
   --rail-width-collapsed: 46px;
-  --rail-width-expanded: 196px;
+  --rail-width-expanded: clamp(220px, 20vw, 380px);
 
   --font-display: "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
   --font-sans: "Hanken Grotesk", "Segoe UI", system-ui, sans-serif;
@@ -160,6 +160,60 @@
   .card {
     @apply bg-card shadow-card rounded-2xl;
   }
+
+  /*
+   * THE OFFICE RAIL.
+   *
+   * Collapsed to a narrow strip; the hamburger widens it in place and the page
+   * reflows beside it. Nothing ever floats over the report. An overlay variant
+   * with a scrim was built alongside this one for comparison and rejected.
+   *
+   * This is not a <dialog>, and that is the whole point. The drawer it replaces
+   * broke three times from five distinct causes that all produced one identical
+   * symptom: top-layer membership released before the exit finished, an
+   * ancestor's backdrop-filter creating a containing block, unmounting before
+   * transitionend, reduced motion suppressing the transition, and the transition
+   * never being emitted at all. A width transition on an element that never
+   * unmounts and never enters the top layer makes every one of those
+   * structurally impossible — no top layer means no `overlay` property, which
+   * Firefox does not ship.
+   *
+   * Opening is longer than closing on purpose: an entrance is worth watching,
+   * an exit should get out of the way.
+   */
+  .office-rail {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+    overflow: hidden;
+    width: var(--rail-width-collapsed);
+    transition: width 260ms var(--ease-out-soft);
+  }
+
+  .office-rail[data-expanded] {
+    width: var(--rail-width-expanded);
+  }
+
+  .office-rail:not([data-expanded]) {
+    transition-duration: 200ms;
+  }
+
+  /* Always visible, always the same width: the hamburger and the brand mark. */
+  .office-rail-strip {
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+    width: var(--rail-width-collapsed);
+  }
+
+  /* Revealed by the rail's own width; clipped rather than reflowed, so the
+     office names never rewrap mid-transition. */
+  .office-rail-panel {
+    flex-shrink: 0;
+    overflow: hidden;
+    width: calc(var(--rail-width-expanded) - var(--rail-width-collapsed));
+  }
+
 
   /*
    * The station drawer: a modal <dialog>, so it sits in the browser's top layer

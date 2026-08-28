@@ -45,20 +45,45 @@ but it must be raised with each division before its first report is published.
 - **Any form of access control.** "Embed for your organization" plus Azure AD, or
   a gated host, is a backend effort with a hard dependency on IT. It was
   considered and is not what was asked for.
-- **A new repository.** The name `darfo2-wms-powerbi-portal` is now wrong, but
-  renaming is a separate, low-risk chore that should not ride along with a
-  restructure. Noted in open items.
-- **Search.** The RGA has a search field. Fourteen tiles on one screen do not
-  need one, and an empty search box on a portal with no published reports is
-  worse than none.
-- **Report thumbnails.** The RGA's report cards carry preview images. There are
-  no reports to screenshot, and hand-made placeholder images would be a
-  maintenance burden that grows with the config.
 - **A regional roll-up dashboard.** `REGIONAL_OVERVIEW` made sense when five
   stations shared one schema. Fourteen offices with unrelated reports have
   nothing to roll up. It is removed rather than carried forward; if the office
   later wants an executive summary report, it is an office with one report like
   any other.
+
+## Deferred — wanted, but not in this restructure
+
+These are confirmed as things the portal should eventually have. They are held
+back because each one needs something that does not exist yet, not because they
+were rejected.
+
+- **Search.** The RGA has one. What it needs first is content: a search field on
+  a portal where every office holds a single placeholder report has nothing to
+  match, so it lands once the office fills in real report names. When it does, it
+  searches offices and reports together and belongs in the home header rather
+  than the rail. Nothing in this design blocks it — `OFFICES` already holds
+  everything a search index would read.
+- **Report thumbnails.** The RGA's cards carry preview images. There is nothing
+  to screenshot until a report is published, and hand-drawn placeholders would be
+  a maintenance burden that grows with the config. When they arrive they need a
+  `thumbnail` field on each report and a decision about where the images live;
+  `OfficeTile` and `ReportTabs` should be built so adding one is a layout change,
+  not a restructure.
+
+## Decided: the repository gets renamed
+
+`darfo2-wms-powerbi-portal` → **`darfo2-private-powerbi-portal`**.
+
+The rename itself happens on GitHub and is the user's action, not something this
+work performs. What belongs to this work is everything inside the repository that
+names it: `package.json` `name` and `description`, and every reference in
+`README.md`.
+
+Two things to know about the rename. GitHub redirects the old URL, so existing
+clones keep working, but the local remote should still be repointed with
+`git remote set-url` rather than left on a redirect. And the Vercel project is
+linked to the repository — confirm the deployment still builds after the rename
+rather than assuming the link follows.
 
 ## Part 1 — Information architecture
 
@@ -364,8 +389,8 @@ it specifically, not "modern browsers".
 
 Not part of the restructure, but caused by it and easy to lose:
 
-- `package.json` `name` and `description` still say WMS.
-- The repository is named `darfo2-wms-powerbi-portal`.
+- `package.json` `name` and `description` still say WMS — see the rename section
+  above for what they become.
 - `README.md` is written entirely around the WMS and the public framing.
 - `CLAUDE.local.md` is written around the WMS, the station model, and the drawer
   that this design deletes. It needs rewriting once the restructure lands, or it

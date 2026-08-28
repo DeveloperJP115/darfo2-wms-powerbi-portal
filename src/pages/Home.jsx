@@ -9,6 +9,13 @@ import OfficeTile from "../components/OfficeTile.jsx";
  *
  * Groups come from GROUPS rather than being written out here, so adding a
  * heading is a config change.
+ *
+ * THE TILES ARE A FIXED WIDTH ON PURPOSE — do not restore stretchy columns.
+ * With `1fr` tracks, every card resizes on each frame of the rail's width
+ * transition, so their text re-wraps and re-rasterises about sixty times a
+ * second. Chrome renders that as visibly jittering letters; Firefox rounds
+ * differently and hides it. Fixed tracks take the change in the gaps instead,
+ * and the text never moves.
  */
 export default function Home() {
   return (

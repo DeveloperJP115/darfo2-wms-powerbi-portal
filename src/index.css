@@ -36,6 +36,43 @@
   --color-ink-faint: #8a938c;
   --color-hairline: #dee4dc;
 
+  /*
+   * RGA PALETTE — the colours the public RGA portal uses, so the two read as
+   * siblings. Green is the identity; gold is the second accent and carries
+   * exactly one job, marking a report that is not published yet. Nothing else
+   * may use gold.
+   */
+  --color-green-800: #166534;
+  --color-green-700: #15803d;
+  --color-green-600: #16a34a;
+  --color-green-500: #22c55e;
+  --color-mint-100: #dcfce7;
+  --color-mint-50: #f0fdf4;
+
+  --color-gold-700: #a16207;
+  --color-gold-600: #ca8a04;
+  --color-gold-300: #fde68a;
+  --color-gold-100: #fef9c3;
+
+  --color-slate-900: #0f172a;
+  --color-slate-500: #64748b;
+  --color-slate-400: #94a3b8;
+  --color-slate-200: #e2e8f0;
+  --color-slate-50: #f8fafc;
+
+  /* The pale green the rail and the page header are separated by. */
+  --color-rail-edge: #e6f4ea;
+
+  /*
+   * The rail's two widths. Not in a Tailwind namespace, so these generate no
+   * utilities — they are read by var() from the .office-rail rule and from one
+   * arbitrary width utility. See the build check in the plan: a variable that is
+   * not emitted makes the rail 0px wide, which looks exactly like a broken
+   * layout and says nothing about the cause.
+   */
+  --rail-width-collapsed: 46px;
+  --rail-width-expanded: 196px;
+
   --font-display: "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
   --font-sans: "Hanken Grotesk", "Segoe UI", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;

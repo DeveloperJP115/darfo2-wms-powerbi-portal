@@ -12,43 +12,24 @@
 
 @source "./**/*.{js,jsx}";
 @source "../index.html";
-
 /*
  * DESIGN TOKENS — the one place to tune the look of the portal.
  *
- * Daylight: a pale green canvas with white cards lifted off it by soft shadow,
- * so nothing is boxed in by hairlines. Warm sand carries the masthead and
- * footer so the page never reads as cold gray.
+ * The palette is the public RGA portal's, so the two read as siblings: bright
+ * green for actions, forest green for headings and brand, pale mint grounds,
+ * and white cards lifted off a slate-tinted page by soft shadow rather than
+ * boxed in by hairlines.
  *
- * Green is the identity and every interactive state. Clay has exactly one job:
- * marking a dashboard that is not published yet. Nothing else may use it.
+ * Green is the identity and every interactive state. GOLD HAS EXACTLY ONE JOB:
+ * marking a report that is not published yet. Nothing else may use it. (Clay
+ * held that job in the WMS palette; the rule survived the repaint, the colour
+ * did not.)
  *
  * Type is set large on purpose — the primary venue is a projector in a meeting
  * room, and the extra size is what keeps the density friendly rather than
- * technical. Mono is reserved for station codes only.
+ * technical. Mono is reserved for office codes only.
  */
 @theme {
-  --color-leaf-700: #1f5c39;
-  --color-leaf-600: #256540;
-  --color-leaf-500: #2f7d4f;
-  --color-leaf-400: #4f9d6c;
-  --color-leaf-100: #e3efe7;
-
-  --color-sand-200: #e8e0d1;
-  --color-sand-100: #f2ece1;
-  --color-sand-50: #faf7f0;
-
-  --color-canvas: #f1f5ef;
-  --color-card: #ffffff;
-
-  --color-clay-600: #a8623c;
-  --color-clay-100: #f6eae1;
-
-  --color-ink: #1f2a24;
-  --color-ink-soft: #55635b;
-  --color-ink-faint: #8a938c;
-  --color-hairline: #dee4dc;
-
   /*
    * RGA PALETTE — the colours the public RGA portal uses, so the two read as
    * siblings. Green is the identity; gold is the second accent and carries
@@ -145,11 +126,11 @@
   }
 
   body {
-    @apply bg-canvas text-ink font-sans text-[19px] leading-[1.7] antialiased;
+    @apply bg-slate-50 text-slate-900 font-sans text-[19px] leading-[1.7] antialiased;
   }
 
   :focus-visible {
-    @apply outline-leaf-500 outline-2 outline-offset-2;
+    @apply outline-green-600 outline-2 outline-offset-2;
   }
 
   h1,
@@ -171,7 +152,7 @@
   }
 
   .card {
-    @apply bg-card shadow-card rounded-2xl;
+    @apply bg-white shadow-card rounded-2xl;
   }
 
   /*
@@ -227,90 +208,12 @@
     width: calc(var(--rail-width-expanded) - var(--rail-width-collapsed));
   }
 
-
-  /*
-   * The station drawer: a modal <dialog>, so it sits in the browser's top layer
-   * and no ancestor can clip it. That matters here — the report bar uses
-   * backdrop-filter, which makes it the containing block for fixed descendants,
-   * and a panel positioned inside it gets trimmed to the height of the bar.
-   *
-   * THE EXIT DOES NOT USE `display`/`overlay` WITH allow-discrete, and that is
-   * deliberate. Deferring top-layer removal so an exit can animate requires the
-   * `overlay` property, which Firefox does not support at all — and Firefox is
-   * the browser this portal is presented from. There, a dialog that calls
-   * close() leaves the top layer at once and the slide-out never renders.
-   *
-   * Instead the panel is animated out while it is still open, and close() is
-   * called only once that has finished. StationDrawer.jsx adds data-closing to
-   * drive it. That works in every browser and needs no Chrome-only property.
-   *
-   * Opening takes longer than closing on purpose: an entrance is worth
-   * watching, an exit is something to get out of the way.
-   */
-  .station-drawer {
-    position: fixed;
-    inset: 0 auto 0 0;
-    flex-direction: column;
-    width: 23rem;
-    max-width: 86vw;
-    /* The browser's own dialog rules size a dialog to its content and cap its
-       height, which beats the insets above. Stating the height outright is the
-       only reliable way to get a full-height panel. */
-    height: 100dvh;
-    max-height: none;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    translate: -100% 0;
-    transition: translate 260ms var(--ease-out-soft);
-  }
-
-  /* Only when open, so the browser's own `display: none` still hides it when
-     closed — an unconditional `display` here would leave it always on screen. */
-  .station-drawer[open] {
-    display: flex;
-    translate: 0 0;
-  }
-
-  /* Still open, so still in the top layer and still rendered — but on its way
-     out. Quicker than the entrance. */
-  .station-drawer[open][data-closing] {
-    translate: -100% 0;
-    transition-duration: 200ms;
-  }
-
-  .station-drawer::backdrop {
-    background-color: rgb(31 42 36 / 0.4);
-    opacity: 0;
-    transition: opacity 260ms var(--ease-out-soft);
-  }
-
-  .station-drawer[open]::backdrop {
-    opacity: 1;
-  }
-
-  .station-drawer[open][data-closing]::backdrop {
-    opacity: 0;
-    transition-duration: 200ms;
-  }
-
-  /* The state to animate *from* on first paint. Without this the panel is
-     already in place by the time the transition would begin. */
-  @starting-style {
-    .station-drawer[open] {
-      translate: -100% 0;
-    }
-
-    .station-drawer[open]::backdrop {
-      opacity: 0;
-    }
-  }
 }
 
 /*
  * `::backdrop` is listed separately on purpose: it is not a descendant of
- * anything, so `*` does not match it. Without it the drawer's scrim would keep
- * fading at full length while the panel it belongs to snapped into place.
+ * anything, so `*` does not match it. No dialog ships today, but the selector
+ * stays so that any future one cannot silently escape reduced motion.
  */
 @media (prefers-reduced-motion: reduce) {
   *,

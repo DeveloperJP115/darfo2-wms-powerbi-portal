@@ -15,7 +15,7 @@ export default function BrandLogo({ src, alt, monogram, className = "" }) {
       <span
         role="img"
         aria-label={alt}
-        className={`bg-leaf-100 text-leaf-700 ring-leaf-500/20 code inline-flex shrink-0 items-center justify-center rounded-full text-[11px] ring-1 ${className}`}
+        className={`bg-mint-100 text-green-700 ring-green-600/20 code inline-flex shrink-0 items-center justify-center rounded-full text-[11px] ring-1 ${className}`}
       >
         {monogram}
       </span>

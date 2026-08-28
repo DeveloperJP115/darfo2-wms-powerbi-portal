@@ -1,38 +1,42 @@
-# WMS Analytics Portal — DA-RFO 02
+# Analytics Portal — DA-RFO 02
 
-A public, no-login web portal that surfaces Power BI dashboards for the **Warehouse
-Management System (WMS)** of the Department of Agriculture Regional Field Office 02,
-organized by Research Center / Experiment Station (**RCES**).
+A web portal that surfaces Power BI dashboards for the whole of the Department of
+Agriculture Regional Field Office 02, organised by **office** — the divisions, experiment
+stations and research centres of the regional field office.
 
-The point is simple: one clean URL the office can present warehouse analytics from,
-instead of opening each Power BI report individually.
+The point is simple: one clean URL the office can present from, instead of opening each
+Power BI report individually.
 
-This is the warehouse-focused sibling of the existing **RGA** portal
-(<https://darfo2powerbi.vercel.app/>), which is the visual and structural template for
-this project. The RGA codebase is not reused — only its pattern and feel.
+This is the internal counterpart to the public **RGA** portal
+(<https://darfo2powerbi.vercel.app/>), whose palette and layout this one deliberately
+echoes so the two read as siblings. The RGA codebase is not reused — only its pattern and
+feel.
 
 ## What it is (and is not)
 
-**Is:** a front-end-only static single-page app. A home switchboard of stations, one page
-per station embedding a Power BI report in a responsive iframe, and a slide-over drawer
-for switching between them.
+**Is:** a front-end-only static single-page app. A home switchboard of offices, a page per
+report embedding Power BI in a responsive iframe, and a rail that expands in place for
+switching between offices.
 
 **Is not:** there is no backend, no database, no authentication, no API routes, no
-server-side code. No Power BI JavaScript SDK, no embed tokens, no service principals,
-no Power BI REST API. No CMS — the config file is the CMS. Read-only presentation only;
-nothing is ever written back to SharePoint.
+server-side code. No Power BI JavaScript SDK, no embed tokens, no service principals, no
+Power BI REST API. No CMS — the config file is the CMS. Read-only presentation only.
 
 ---
 
-## ⚠️ Security constraint: dashboards are public by design
+## ⚠️ "Internal" describes the audience, not a protection
 
-Each dashboard is embedded using Power BI's **"Publish to web (public)"** feature, which
-produces an embed URL of the form `https://app.powerbi.com/view?r=<TOKEN>`.
+This portal is for internal presentation. That is a statement about **who it is for**, not
+about who *can* reach it.
 
-**"Publish to web" makes a report publicly viewable by anyone with the link, with no
-login.** That is acceptable and intentional for this portal *for now*: it mirrors how the
-RGA works, and the office wants a frictionless presentation URL. But it does mean the
-warehouse data embedded here is public.
+Every dashboard is embedded using Power BI's **"Publish to web (public)"**, which produces
+a URL of the form `https://app.powerbi.com/view?r=<TOKEN>`. **That makes the report
+viewable by anyone with the link, with no login.** Nothing in this repository adds access
+control, and nothing in the copy should imply otherwise.
+
+If the office ever needs the portal genuinely restricted, that is a backend effort —
+Power BI "Embed for your organization" plus Azure AD, or a gated host — and is out of
+scope here.
 
 **It goes further than "the data is public", and this is the part worth reading twice.**
 Microsoft's own documentation states:
@@ -41,23 +45,19 @@ Microsoft's own documentation states:
 > can access the underlying data in your model even if your report does not display it.
 
 So a report showing only regional totals still exposes **every underlying row** to anyone
-who queries the model. This WMS sits on 14–18 SharePoint lists. If any of them hold
-supplier names, unit costs, staff names, or quantities the office would not publish
-deliberately, publish-to-web exposes them regardless of what the visuals show.
+who queries the model. That stake is higher now than it was for the warehouse portal this
+grew out of: the offices here include Finance and Administrative, Regulatory, and
+Planning, Monitoring and Evaluation.
 
-**Raised and answered, 13 August 2026:** the office confirms data privacy is handled within
-the Power BI reports themselves, so the models are not expected to carry personal data.
+**Raised and answered, 13 August 2026:** the office confirms data privacy is handled
+within the Power BI reports themselves, so the models are not expected to carry personal
+data. That answer predates the office-wide scope — **re-ask it for each division before
+its first report is published.**
 
-Keep the distinction in mind when building any new report: the protection has to be in what
+Keep the distinction in mind when building any report: the protection has to be in what
 the **model contains**, not in what the visuals **display**. Dropping a column in Power
-Query keeps it out of the published model; hiding it from a visual does not. Pre-aggregating
-in Power Query or a SharePoint view is the strongest version of this — a model holding only
-summaries is safe to expose no matter who queries it.
-
-This is a **documented, deliberate choice — not an oversight.** If the office later
-requires access control, that becomes a future backend effort (Power BI "Embed for your
-organization" + Azure AD, or a gated host) and is explicitly out of scope for this
-repository.
+Query keeps it out of the published model; hiding it from a visual does not.
+Pre-aggregating in Power Query or a SharePoint view is the strongest version of this.
 
 Nothing secret lives in this codebase. The embed URLs are public tokens by definition,
 which is why they sit in plain config rather than environment variables.
@@ -79,108 +79,97 @@ that in any claim about mobile support.
 
 ---
 
-## The stations
+## The offices
 
-The portal is organized by experiment station rather than by office division (the RGA uses
-divisions):
+Two groups, both defined in the config rather than in any component.
 
-| Route   | Short | Station                             |
-| ------- | ----- | ----------------------------------- |
-| `/`     | —     | Home / regional overview            |
-| `/nces` | NCES  | Northern Cagayan Experiment Station |
-| `/ies`  | IES   | Isabela Experiment Station          |
-| `/cvrc` | CVRC  | Cagayan Valley Research Center      |
-| `/scrc` | SCRC  | Southern Cagayan Experiment Station |
-| `/qes`  | QES   | Quirino Experiment Station          |
+**Divisions:** PMED, AMAD, ILD, RAED, FOD, FAD, Research Division, Regulatory Division.
 
-That list is the current one, not a fixed set — stations can be added or removed at any
-time. They all run the same SharePoint template, so their dashboards are structurally
-similar, which is why the app uses a **single dynamic `/:station` route driven by config**
-rather than one hand-written page per station.
+**Stations and research centres:** NCES, IES, CVRC, SCRC, QES, BES.
+
+The number of offices is not fixed. Never write a count into copy, markup, or a comment —
+everything maps over `OFFICES`, so the portal works with however many entries the config
+holds.
+
+Two names are confirmed by the office: **BES is Batanes Experiment Station** and **SCRC is
+Southern Cagayan Research Center**. The rest of the expansions are drafts — see Open items.
 
 ---
 
-## Editing content: `src/config/stations.js`
+## Editing content: `src/config/offices.js`
 
-**One file drives everything** — the switchboard, the drawer, the routes, the embeds, and
-the footer. You should never need to touch component code to change content.
+**This is the only file you need to edit to change content.** It drives the switchboard,
+the rail, the routes, the embeds, and the footer. You should never have to open a
+component to change wording or add an office.
+
+It is **tab-indented** while the rest of the codebase is 2-space. That is deliberate; do
+not let an editor convert it.
+
+The shape is two levels — an office holds reports:
 
 ```js
-export const SITE = {
-  title: "WMS Analytics Portal",
-  subtitle: "Warehouse Management System — DA-RFO 02",
-  // ...office identity, vision, and contact block
-};
+export const GROUPS = [
+	{ id: "divisions", label: "Divisions" },
+	{ id: "stations", label: "Stations & Research Centers" },
+];
 
-export const STATIONS = [
-  {
-    slug: "nces",                                   // becomes the route: /nces
-    short: "NCES",                                  // tile and drawer label
-    name: "Northern Cagayan Experiment Station",    // page header + tile title
-    embedUrl: "",                                   // Power BI "Publish to web" URL
-    blurb: "Seed inventory, deliveries, withdrawals, germination, and environmental logs.",
-  },
-  // ...
+export const OFFICES = [
+	{
+		slug: "pmed",
+		code: "PMED",
+		name: "Planning, Monitoring and Evaluation Division",
+		group: "divisions",
+		blurb: "",
+		reports: [
+			{ slug: "dashboard", name: "Dashboard", embedUrl: "", blurb: "" },
+		],
+	},
 ];
 ```
 
-### Add, rename, or remove a station
+An office holds **zero or more** reports. One report and six reports both work with no
+code change; an office with none renders a page saying so rather than an error.
 
-Add, edit, or delete an entry in `STATIONS`. The switchboard tile, the drawer entry, and
-the route all follow automatically — there is no fixed station count anywhere in the code.
-Station names in that array are the only copy of those names, so renaming a station is a
-one-line edit there.
+### Add, rename, or remove an office
+
+Add an entry to `OFFICES`. The tile, the rail entry and the routes all follow. `group`
+must match one of the `GROUPS` ids — a typo there is caught by the build gate, because
+otherwise the office would silently vanish from both the switchboard and the rail.
+
+### Add a report to an office
+
+Append to that office's `reports`. With two or more, a tab strip appears on the report
+page automatically. Report slugs must be unique **within** their office; two different
+offices may both use `dashboard`, because the route carries the office as well.
 
 ### Paste in a Power BI embed URL
 
-1. In the Power BI Service, open the report → **File → Embed report → Publish to web
-   (public)**.
-2. Copy the link Power BI gives you. You want the `https://app.powerbi.com/view?r=...`
-   URL, not the full `<iframe>` HTML snippet.
-3. Paste it into that station's `embedUrl` in `src/config/stations.js`, save, and redeploy.
+In Power BI: **File › Embed report › Publish to web (public)**, then copy the address only
+— not the whole iframe snippet. It looks like:
 
-**An empty `embedUrl` is a valid state.** The station page renders a clean
-*"Dashboard coming soon"* placeholder card instead of a broken iframe — no error, no blank
-page. So stations can go live before their reports are ready.
+```
+https://app.powerbi.com/view?r=eyJrIjoiMWEyYjNjNGQ...
+```
 
-**A wrong `embedUrl` will not deploy.** Power BI offers several links and only one of them
-works here, so the config is checked before the site is built:
-
-- `npm run build` refuses to build and names the problem — a pasted `<iframe>` snippet, an
-  authenticated `/groups/…` link, the token-based `/reportEmbed` endpoint, a truncated
-  token. Nothing invalid reaches Vercel.
-- While `npm run dev` is running, the same problems appear in the browser console.
-- The station page itself says the report is unavailable, and when running locally it also
-  names the file to fix and what is wrong with the link.
-
-Run `npm run check-config` on its own if you just want to check the config.
+Leave `embedUrl` as an empty string until the report exists; the page then shows a "Report
+coming soon" card instead of a broken frame. Paste the wrong kind of link and the build
+refuses to run, naming the office, the report, and which Power BI menu item to use
+instead.
 
 ### Add the logo assets
 
-Logos are plain `<img>` tags pointing at files in `/public`. Drop the real images in at
-these paths:
-
-- `public/da-logo.png` — Department of Agriculture logo
-- `public/bp.png` — Bagong Pilipinas logo
-
-Transparent PNGs, roughly 512 px on the long edge, look best in the hero and footer.
-The paths live in `SITE.logos` in the config if you need to change them.
-
-**No placeholder image files ship with the repo.** Until the real files are in place, the
-`BrandLogo` component falls back to a green lettered disc (`DA` / `BP`), so the layout
-holds and no broken-image icon ever appears.
+Drop `da-logo.png` and `bp.png` into `public/`. Until then a lettered monogram renders in
+their place — the portal does not show a broken image.
 
 ### Adjust the palette or type
 
-Every color, typeface, and shadow is a token in the `@theme` block at the top of
-`src/index.css` — nothing is hardcoded in components. Tune it in that one place.
+Tokens live in the `@theme` block of `src/index.css`. **Gold has exactly one job: marking
+a report that is not published yet.** Nothing else may use it.
 
-- `leaf` — mid-tone DA green. Identity and every interactive state.
-- `sand` — warm neutrals for the masthead and footer, so the page never reads cold.
-- `canvas` / `card` — the pale ground and the white cards that float on it.
-- `clay` — reserved for one job only: marking a dashboard that isn't published yet.
-  Don't reuse it for anything else, or the signal stops meaning anything.
-- `ink` — text, from `ink` through `ink-soft` to `ink-faint`.
+Tailwind's content sources are declared explicitly at the top of that file rather than
+auto-detected. Automatic detection scans the whole project including `docs/`, where the
+spec and plan quote class names in code blocks — which turned documentation into real CSS
+rules and broke any check that greps the built CSS to prove a class is gone.
 
 ---
 
@@ -204,20 +193,24 @@ npm run preview  # serves dist/ locally
 The rest:
 
 ```bash
-npm test           # the config test suite, about a fifth of a second
-npm run test:watch # the same, re-running as you edit
-npm run check-config  # validate stations.js without building
+npm test              # the config test suite, about a fifth of a second
+npm run test:watch    # the same, re-running as you edit
+npm run check-config  # validate offices.js without building
 ```
 
 One Windows note: stop the dev server before running `npm ci`. It holds
 `lightningcss.win32-x64-msvc.node` open, and the install fails with `EPERM` trying to
 replace it. This does not affect CI, which runs on Linux.
 
+A second Windows note, learned the hard way: editing a file with `sed -i` replaces it via
+temp-and-rename, which Vite's watcher can miss. The browser then keeps serving a pre-edit
+transform and you debug a bug that is not there. `touch` the file afterwards.
+
 ---
 
 ## Deploying to Vercel
 
-**Not deployed yet** as of 13 August 2026 — still in development. The configuration below
+**Not deployed yet** as of 20 August 2026 — still in development. The configuration below
 is ready for the first deploy.
 
 Zero-config for a Vite SPA: import the repository in Vercel and it detects Vite, builds
@@ -232,7 +225,7 @@ The one piece of required configuration is `vercel.json`:
 ```
 
 **Why this matters:** routing is client-side. Without a catch-all rewrite, loading or
-refreshing a deep link like `/nces` makes Vercel look for a file at that path, find
+refreshing a deep link like `/pmed` makes Vercel look for a file at that path, find
 nothing, and return a 404. The rewrite hands every path to `index.html` so React Router
 can resolve it. Don't remove this file.
 
@@ -240,26 +233,41 @@ can resolve it. Don't remove this file.
 
 ## Tech stack
 
-| Concern    | Choice                                        |
-| ---------- | --------------------------------------------- |
-| Build tool | Vite                                          |
+| Concern    | Choice                                            |
+| ---------- | ------------------------------------------------- |
+| Build tool | Vite                                              |
 | Framework  | React, **plain JavaScript / JSX** (no TypeScript) |
 | Styling    | Tailwind CSS v4, CSS-first (no `tailwind.config.js`) |
 | Routing    | React Router (`react-router-dom`), `<BrowserRouter>` |
 | Tests      | Vitest, no extra config — it reads `vite.config.js` |
-| CI         | GitHub Actions: test + build on every push    |
-| Hosting    | Vercel (static)                               |
-| Backend    | None                                          |
+| CI         | GitHub Actions: test + build on every push        |
+| Hosting    | Vercel (static)                                   |
+| Backend    | None                                              |
 
 Deliberately **not** Next.js, and deliberately not TypeScript.
 
 There are **no runtime dependencies beyond React, React DOM and React Router**. The bundle
-is around 253 kB. Adding an animation library, a UI kit, or a state manager needs
+is around 251 kB. Adding an animation library, a UI kit, or a state manager needs
 justifying against that — the motion in this portal is all native CSS.
 
 `<BrowserRouter>` is deliberate rather than incidental. `createBrowserRouter` plus
-`<RouterProvider>` costs roughly **53 kB** of loader and action machinery this portal never
-uses. It was tried once to get React Router's `viewTransition` support and reverted.
+`<RouterProvider>` costs roughly **53 kB** of loader and action machinery this portal
+never uses. It was tried once to get React Router's `viewTransition` support and reverted.
+
+---
+
+## Routes
+
+| Route | Renders |
+| ----- | ------- |
+| `/` | The switchboard: office tiles under their group headings |
+| `/:office` | That office's default report — first published, else first listed |
+| `/:office/:report` | One specific report |
+| `*` | Not found |
+
+`/:office` renders directly rather than redirecting. A redirect would flash a URL nobody
+typed and leave a junk entry in history, which matters when someone is clicking back and
+forth in front of a room.
 
 ---
 
@@ -268,25 +276,24 @@ uses. It was tried once to get React Router's `viewTransition` support and rever
 ```
 src/
   config/
-    stations.js          the only file you edit for content
-    validate.js          what counts as a valid station and embed URL
-    stations.test.js     44 cases over the above
+    offices.js           the only file you edit for content
+    validate.js          what counts as a valid office, report and embed URL
+    offices.test.js      48 cases over the above
   components/
-    AppLayout.jsx        thin shell: main + footer, skip link, scroll reset
+    AppLayout.jsx        the shell: rail, main, footer, skip link, scroll reset
+    OfficeRail.jsx       the collapsible office navigation
     ErrorBoundary.jsx    turns a render fault into a page, not a blank screen
-    Masthead.jsx         home masthead with logos and the motif wash
-    StationTile.jsx      one switch on the home switchboard
-    ReportBar.jsx        slim report chrome: home link, identity, drawer trigger
-    StationNav.jsx       the hamburger button and the drawer state behind it
-    StationDrawer.jsx    slide-over station switcher, reachable from any page
+    Masthead.jsx         home header, brand mark and greeting card
+    OfficeTile.jsx       one switch on the home switchboard
+    ReportHeader.jsx     slim report chrome: home, breadcrumb, status
+    ReportTabs.jsx       the current office's reports, and only those
     DashboardEmbed.jsx   the report, "coming soon", or "that link won't work"
     StatusTag.jsx        the one Live / Coming soon vocabulary
     BrandLogo.jsx        logo image with monogram fallback
-    Botanical.jsx        the seed-leaf motif and watermark
     Footer.jsx           office identity, vision, contact
   pages/
-    Home.jsx             masthead plus the station switchboard
-    DashboardPage.jsx    the /:slug route
+    Home.jsx             masthead plus the office switchboard
+    ReportPage.jsx       the /:office and /:office/:report routes
     NotFound.jsx         unknown slug or unknown path
   index.css              design tokens (@theme) — palette, type and motion
 scripts/
@@ -297,35 +304,34 @@ scripts/
 
 Design notes, in case you extend it:
 
-- **Home is a switchboard, report pages are almost bare.** There is no persistent
-  sidebar. The home page exists to be presented from; a report page gives its width to
-  the dashboard and keeps only a slim bar. Switching stations mid-meeting goes through
-  the slide-over drawer — the same component on desktop and mobile, closable with Esc,
-  the overlay, or by picking a station. Nothing of it is on screen until the hamburger
-  is pressed: labelled "Switch station" on a report page, icon-only in the masthead
-  corner on home, where the switchboard itself is the primary navigation.
-- **The station count is not fixed.** Never write a number of stations into copy,
-  markup, or a comment. Everything maps over `STATIONS`, so the portal works with
-  however many entries the config holds.
-- **Cards float, they don't outline.** Elevation and roundness carry the structure
-  instead of hairline borders — that is most of what keeps the portal from feeling harsh.
-- **Mono is only for station codes.** In a meeting the code is what people say out loud,
-  so it leads each tile. Everything else is set in the humanist sans; spreading mono
-  further is what made an earlier pass read as robotic.
-- **The seed-leaf motif appears twice.** Washed across the masthead, and as a watermark
-  behind an unpublished dashboard. Adding a third use turns it into wallpaper.
+- **Three controls, three jobs, no overlap.** The rail says *which office*, the tabs say
+  *which report*, the breadcrumb says *where you are* and is deliberately not a menu.
+  Giving two controls the same job means two things to keep in sync.
+- **The rail expands in place; nothing floats over the report.** It is a width transition
+  on an element that never unmounts and never enters the browser's top layer. That
+  matters: it replaced a modal `<dialog>` drawer whose slide-out broke three times from
+  five distinct causes that all produced one identical symptom. Every one of those is
+  structurally impossible here. An overlay variant was built alongside it and rejected.
+- **Switchboard tiles are a fixed width on purpose.** Stretchy `1fr` columns re-wrap every
+  card's text on each frame of the rail's transition; Chrome renders that as visibly
+  jittering letters. Fixed tracks take the change in the gaps instead. Do not "fix" this.
+- **Cards float, they don't outline.** Elevation and roundness carry the structure instead
+  of hairline borders — that is most of what keeps the portal from feeling harsh.
+- **Mono is only for office codes.** In a meeting the code is what people say out loud, so
+  it leads each tile. Spreading mono further is what made an earlier pass read as robotic.
 - **Type runs large on purpose.** The venue is a projector in a meeting room, and the
   extra size and spacing are what keep the density friendly.
 - **Motion is native CSS, and every transition respects `prefers-reduced-motion`.** No
   animation carries information on its own, so the portal reads identically with motion
   switched off. Note `::backdrop` is listed separately in that media query — a universal
-  selector does not match it, which silently exempts the drawer scrim.
+  selector does not match it. No dialog ships today, but the selector stays so any future
+  one cannot silently escape.
 - **Check browser features against Firefox specifically, not "modern browsers".** The
   portal is presented from Firefox. Two examples already paid for: scroll-driven
   animations are still behind a flag there, and the CSS `overlay` property is **not
-  supported at all** — which is why the drawer animates out *while still open* and calls
-  `close()` afterwards, rather than relying on the top layer to defer its removal. Verify
-  the exit in both browsers, not just the entrance; they have different failure modes.
+  supported at all**. Verify any animation in both browsers and in **both directions** —
+  entrances and exits have different failure modes, and every regression in this project
+  came from checking one and generalising.
 
 ---
 
@@ -333,27 +339,26 @@ Design notes, in case you extend it:
 
 For the office to confirm:
 
-- Power BI "Publish to web" URLs for each station
-- The station blurbs — only the NCES one came from the office; the rest were drafted here
-  and should be checked before this is shown publicly
-- Final DA logo and Bagong Pilipinas logo image files
-- Whether the contact details — carried over from the RGA footer as defaults — are correct
-  for the WMS context
-- **`SCRC` does not abbreviate its own name.** "Southern Cagayan Experiment Station" would
-  give `SCES`. Either the code or the name is wrong, and only the office knows which
+- **Power BI "Publish to web" URLs.** None exist for any office. The iframe path has never
+  run against a real report — only against a local stub. Do not describe it as proven.
+- **The eight division names.** Drafted here, unchecked. So is "Isabela Experiment
+  Station"; the original brief called it *Ilagan*.
+- **Whether Research Division and Regulatory Division have official acronyms.** They
+  currently render as the words, which sits oddly in a monospace column beside four-letter
+  codes. `RD` would collide between the two.
+- **Office blurbs.** Every `blurb` is empty; the tiles and report pages simply omit them.
+- Final DA logo and Bagong Pilipinas logo image files.
+- Whether the contact details — carried over from the RGA footer as defaults — are
+  correct.
 
-The combined **All Stations / Regional Overview** route is built and enabled, with an
-empty embed slot waiting for its report. Set `REGIONAL_OVERVIEW.enabled` to `false` in the
-config to hide it from the nav and home page.
-
-One dependency note, rechecked 13 August 2026. The React Router advisory this section used
-to describe ([GHSA-qwww-vcr4-c8h2](https://github.com/advisories/GHSA-qwww-vcr4-c8h2)) **no
-longer appears** — `react-router-dom@7.18.2` is past it.
+A dependency note, rechecked 13 August 2026. The React Router advisory this section used
+to describe ([GHSA-qwww-vcr4-c8h2](https://github.com/advisories/GHSA-qwww-vcr4-c8h2))
+**no longer appears** — `react-router-dom@7.18.2` is past it.
 
 What `npm audit` reports now is one high-severity item in
 [`nanoid`](https://github.com/advisories/GHSA-2v37-7h3g-55p8), reached through
-`vite → postcss`. It is **dev tooling only** — `npm ls nanoid --omit=dev` comes back empty,
-so it never reaches the built site and cannot affect a visitor.
+`vite → postcss`. It is **dev tooling only** — `npm ls nanoid --omit=dev` comes back
+empty, so it never reaches the built site and cannot affect a visitor.
 
 Still **do not run `npm audit fix --force`**: it is free to make breaking major-version
 changes to the toolchain. A plain `npm audit fix` for this one would only be a patch bump
@@ -363,9 +368,12 @@ to a dev dependency, which is harmless if you want the report clean.
 
 ## Context
 
-This portal is the presentation layer for a larger WMS built on Microsoft SharePoint
-(14–18 lists), with Power BI reports connected to those lists. The portal is a separate,
-standalone public front door to those reports.
+This portal is a presentation layer. It holds **no data of its own** — every number lives
+inside a Power BI report, so never write a figure, total, or count into the markup or
+copy.
 
-Primary use is **live presentation to the office** — projector, meetings — so visual
+Primary use is **live presentation within the office** — projector, meetings — so visual
 clarity and one fast, reliable URL matter more than interactivity.
+
+The design and implementation records for the office-wide restructure are in
+`docs/superpowers/`.

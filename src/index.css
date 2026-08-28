@@ -64,7 +64,7 @@
    * not emitted makes the rail 0px wide, which looks exactly like a broken
    * layout and says nothing about the cause.
    */
-  --rail-width-collapsed: 46px;
+  --rail-width-collapsed: 64px;
   --rail-width-expanded: clamp(220px, 20vw, 380px);
 
   --font-display: "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;

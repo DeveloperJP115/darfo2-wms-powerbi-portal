@@ -70,18 +70,18 @@ export default function OfficeRail() {
       className="office-rail border-rail-edge relative z-20 border-r bg-white"
       data-expanded={expanded || undefined}
     >
-      <div className="office-rail-strip flex flex-col items-center gap-3 bg-white py-3">
+      <div className="office-rail-strip flex flex-col items-center gap-4 bg-white py-4">
         <button
           type="button"
           onClick={() => setExpanded((open) => !open)}
           aria-expanded={expanded}
           aria-label={expanded ? "Close office list" : "Open office list"}
-          className="bg-green-600 hover:bg-green-700 inline-flex size-7 shrink-0 items-center justify-center rounded-lg text-white transition active:scale-90 active:duration-75"
+          className="bg-green-600 hover:bg-green-700 inline-flex size-10 shrink-0 items-center justify-center rounded-xl text-white transition active:scale-90 active:duration-75"
         >
           <svg
             aria-hidden="true"
             viewBox="0 0 20 20"
-            className="size-4"
+            className="size-5"
             fill="none"
             stroke="currentColor"
             strokeWidth="1.9"
@@ -96,7 +96,7 @@ export default function OfficeRail() {
             src={SITE.logos.da}
             alt="Department of Agriculture"
             monogram="DA"
-            className="size-7"
+            className="size-9"
           />
         </Link>
       </div>

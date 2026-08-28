@@ -1,4 +1,17 @@
-@import "tailwindcss";
+/*
+ * Tailwind's content sources are declared explicitly rather than auto-detected.
+ *
+ * Automatic detection scans the whole project, which here includes the design
+ * spec and the implementation plan in docs/. Those quote class names in their
+ * code blocks, so Tailwind generated real rules for utilities no component uses
+ * — including ones from the retired palette. That inflates the bundle, and more
+ * dangerously it makes "grep the built CSS to prove a class is gone" report a
+ * failure that is really just documentation being read as source.
+ */
+@import "tailwindcss" source(none);
+
+@source "./**/*.{js,jsx}";
+@source "../index.html";
 
 /*
  * DESIGN TOKENS — the one place to tune the look of the portal.

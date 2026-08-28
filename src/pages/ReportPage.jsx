@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { defaultReport, findOffice, findReport } from "../config/offices.js";
 import DashboardEmbed from "../components/DashboardEmbed.jsx";
+import ReportHeader from "../components/ReportHeader.jsx";
 import NotFound from "./NotFound.jsx";
 
 export default function ReportPage() {
@@ -17,18 +18,28 @@ export default function ReportPage() {
   if (reportSlug && !report) return <NotFound />;
 
   return (
-    <div className="mx-auto max-w-[104rem] px-6 py-10 md:px-10 md:py-14">
-      <h1 className="text-3xl font-semibold tracking-tight">{office.name}</h1>
+    <>
+      <ReportHeader office={office} report={report} />
 
-      {report ? (
-        <div className="mt-8">
-          <DashboardEmbed dashboard={report} />
-        </div>
-      ) : (
-        <p className="text-ink-soft mt-8 text-xl leading-relaxed">
-          This office has no reports yet.
-        </p>
-      )}
-    </div>
+      <div className="px-6 py-8 md:px-10 md:py-10">
+        {report ? (
+          <>
+
+            {report.blurb && (
+              <p className="text-slate-500 mb-8 max-w-3xl text-xl leading-relaxed">
+                {report.blurb}
+              </p>
+            )}
+
+            <DashboardEmbed dashboard={report} />
+          </>
+        ) : (
+          <p className="text-slate-500 text-xl leading-relaxed">
+            {office.name} has no reports yet. They will appear here once the office
+            publishes them.
+          </p>
+        )}
+      </div>
+    </>
   );
 }

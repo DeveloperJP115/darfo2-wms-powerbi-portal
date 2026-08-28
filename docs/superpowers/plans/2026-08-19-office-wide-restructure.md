@@ -48,8 +48,6 @@ Verification questions must have factual answers. "Does the rail travel from 46p
 | `src/config/offices.test.js` | Guards the live config and the validator |
 | `src/components/OfficeRail.jsx` | The persistent collapsible rail |
 | `src/components/OfficeTile.jsx` | One switch on the grid switchboard |
-| `src/components/OfficeRow.jsx` | One line on the list switchboard |
-| `src/components/ViewToggle.jsx` | Grid/List segmented control |
 | `src/components/ReportHeader.jsx` | Green tile, breadcrumb, status |
 | `src/components/ReportTabs.jsx` | Pill strip of one office's reports |
 | `src/pages/ReportPage.jsx` | Report route |
@@ -1752,180 +1750,18 @@ git commit -m "feat(home): rebuild the switchboard around grouped offices" -m "H
 
 ---
 
-### Task 8: Home — the Grid/List toggle
+### Task 8: Home — the Grid/List toggle — CUT
 
-**Files:**
-- Create: `src/components/ViewToggle.jsx`
-- Create: `src/components/OfficeRow.jsx`
-- Modify: `src/pages/Home.jsx`
+**Cut on 2026-08-20, during implementation, at the user's decision.** The grid
+alone is enough; a second layout that shows the same offices in the same order
+earns nothing and doubles the surface every future switchboard change has to
+land in.
 
-**Interfaces:**
-- Consumes: `officesInGroup`, `isLive` (Task 1); `OfficeTile` (Task 7)
-- Produces: `<ViewToggle value={"grid"|"list"} onChange={(next) => void} />`; `<OfficeRow office={office} />`
+Nothing of it was committed. `ViewToggle.jsx` and `OfficeRow.jsx` were written,
+reverted, and never reached the repository. `Home.jsx` keeps the fixed-width
+grid from Task 7 and holds no layout state.
 
-The choice is not persisted — it resets on reload, which is the right default for a machine that different people present from.
-
-- [ ] **Step 1: Create the toggle**
-
-Create `src/components/ViewToggle.jsx`:
-
-```jsx
-const OPTIONS = [
-  { id: "grid", label: "Grid" },
-  { id: "list", label: "List" },
-];
-
-/**
- * Grid or list for the switchboard. Both show the same offices in the same
- * groups and the same order — only the density differs, so nothing is hidden
- * by choosing one.
- */
-export default function ViewToggle({ value, onChange }) {
-  return (
-    <div
-      role="group"
-      aria-label="Switchboard layout"
-      className="border-slate-200 inline-flex gap-1 rounded-xl border bg-white p-1"
-    >
-      {OPTIONS.map((option) => {
-        const selected = option.id === value;
-
-        return (
-          <button
-            key={option.id}
-            type="button"
-            aria-pressed={selected}
-            onClick={() => onChange(option.id)}
-            className={`rounded-lg px-4 py-1.5 text-[15px] font-semibold transition active:scale-95 active:duration-75 ${
-              selected
-                ? "bg-green-600 text-white"
-                : "text-slate-500 hover:bg-mint-50 hover:text-green-700"
-            }`}
-          >
-            {option.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-```
-
-- [ ] **Step 2: Create the row**
-
-Create `src/components/OfficeRow.jsx`:
-
-```jsx
-import { Link } from "react-router-dom";
-import { isLive } from "../config/offices.js";
-import StatusTag from "./StatusTag.jsx";
-
-/**
- * One line on the list switchboard: code, name, how many reports, status.
- *
- * Reads faster than the grid when you already know which office you want,
- * which is the case in most meetings.
- */
-export default function OfficeRow({ office }) {
-  const live = office.reports.some((report) => isLive(report));
-  const count = office.reports.length;
-
-  return (
-    <Link
-      to={`/${office.slug}`}
-      className="border-slate-200 hover:bg-mint-50 flex items-center gap-5 border-b bg-white px-5 py-3.5 transition-colors first:rounded-t-xl last:rounded-b-xl last:border-b-0"
-    >
-      <span className="code text-green-700 w-28 shrink-0 text-[17px]">{office.code}</span>
-
-      <span className="text-slate-900 min-w-0 flex-1 truncate font-medium">
-        {office.name}
-      </span>
-
-      <span className="text-slate-500 hidden shrink-0 text-[15px] sm:block">
-        {count === 1 ? "1 report" : `${count} reports`}
-      </span>
-
-      <StatusTag live={live} />
-    </Link>
-  );
-}
-```
-
-- [ ] **Step 3: Wire the toggle into home**
-
-In `src/pages/Home.jsx`, add the imports and the state, and branch the group body:
-
-```jsx
-import { useState } from "react";
-import { GROUPS, SITE, officesInGroup } from "../config/offices.js";
-import Masthead from "../components/Masthead.jsx";
-import OfficeRow from "../components/OfficeRow.jsx";
-import OfficeTile from "../components/OfficeTile.jsx";
-import ViewToggle from "../components/ViewToggle.jsx";
-```
-
-```jsx
-export default function Home() {
-  const [layout, setLayout] = useState("grid");
-
-  return (
-    <>
-      <Masthead />
-
-      <div className="px-6 py-10 md:px-10 md:py-14">
-        <div className="flex flex-wrap items-start justify-between gap-6">
-          <p className="text-slate-500 max-w-3xl text-xl leading-relaxed">{SITE.intro}</p>
-          <ViewToggle value={layout} onChange={setLayout} />
-        </div>
-
-        {GROUPS.map((group) => (
-          <section key={group.id} className="mt-12">
-            <h2 className="eyebrow text-green-700">{group.label}</h2>
-
-            {layout === "grid" ? (
-              <ul className="mt-5 grid gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                {officesInGroup(group.id).map((office) => (
-                  <li key={office.slug}>
-                    <OfficeTile office={office} />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <ul className="border-slate-200 shadow-card mt-5 overflow-hidden rounded-xl border">
-                {officesInGroup(group.id).map((office) => (
-                  <li key={office.slug}>
-                    <OfficeRow office={office} />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        ))}
-      </div>
-    </>
-  );
-}
-```
-
-- [ ] **Step 4: Verify**
-
-| Check | Expected |
-|---|---|
-| Click List | the same offices, same groups, same order, one row each |
-| Click Grid | back to tiles |
-| Reload while on List | back to Grid — the choice is deliberately not persisted |
-| Tab to the toggle | both buttons reachable; the selected one reports `aria-pressed="true"` |
-| Every office | appears exactly once in both layouts — count them against the config |
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add src/components/ViewToggle.jsx src/components/OfficeRow.jsx src/pages/Home.jsx
-```
-
-```bash
-git commit -m "feat(home): add the grid and list switchboard layouts" -m "Both read the same grouped office list so neither can hide an office the other shows, and the choice resets on reload."
-```
+Skip straight from Task 7 to Task 9.
 
 ---
 

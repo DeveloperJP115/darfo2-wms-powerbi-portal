@@ -220,11 +220,10 @@ Direction D, the RGA sibling, taken whole:
 - Greeting card on the mint→white→pale-yellow gradient. Time-of-day greeting as
   the RGA does it, then the office name and a one-line description of what the
   portal is.
-- Grid/List toggle above the tiles. **Grid** is the tiles described below;
-  **List** is one row per office — code, full name, and how many reports it
-  holds — which reads faster when you know what you are looking for. Both read
-  the same `officesInGroup` data and keep the same grouping; only the layout
-  differs. The choice is not persisted.
+- ~~Grid/List toggle above the tiles.~~ **Cut during implementation, 2026-08-20.**
+  A second layout showing the same offices in the same groups and the same order
+  earned nothing, and doubled the surface every future switchboard change would
+  have to land in. The grid is the only layout.
 - Two labelled groups of office tiles: white, 12 px radius, code in green, full
   name in slate, gold pill on any office whose reports are all unpublished.
 

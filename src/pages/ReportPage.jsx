@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { defaultReport, findOffice, findReport } from "../config/offices.js";
 import DashboardEmbed from "../components/DashboardEmbed.jsx";
 import ReportHeader from "../components/ReportHeader.jsx";
+import ReportTabs from "../components/ReportTabs.jsx";
 import NotFound from "./NotFound.jsx";
 
 export default function ReportPage() {
@@ -24,6 +25,7 @@ export default function ReportPage() {
       <div className="px-6 py-8 md:px-10 md:py-10">
         {report ? (
           <>
+            <ReportTabs office={office} />
 
             {report.blurb && (
               <p className="text-slate-500 mb-8 max-w-3xl text-xl leading-relaxed">

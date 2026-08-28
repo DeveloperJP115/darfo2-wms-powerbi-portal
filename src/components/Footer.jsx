@@ -1,4 +1,4 @@
-import { SITE } from "../config/stations.js";
+import { SITE } from "../config/offices.js";
 import BrandLogo from "./BrandLogo.jsx";
 
 function ContactRow({ label, children }) {

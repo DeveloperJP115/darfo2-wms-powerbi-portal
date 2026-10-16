@@ -163,7 +163,13 @@ load, a lettered monogram renders in its place — the portal does not show a br
 
 Keep them small: logos appear only in the rail and the home banner, at 36 px, so a file
 of a few hundred pixels at most is plenty. The footer deliberately carries no logos.
-`bp.png` was scaled down from a 960 px original for this reason.
+
+`bp.png` is the Bagong Pilipinas **emblem only**, cropped from the official 960 px logo.
+The "BAGONG PILIPINAS" lettering is only 7.4% of the full logo's height, so at these sizes
+it rendered a few pixels tall and could not be drawn cleanly. The emblem is centred in a
+square so that every pixel falls inside the inscribed circle, which lets it sit in a round
+frame without anything poking past the edge. It has no background of its own, so place it
+on a light ground.
 
 ### Adjust the palette or type
 

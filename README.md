@@ -155,10 +155,14 @@ coming soon" card instead of a broken frame. Paste the wrong kind of link — in
 Publish to web link — and the build refuses to run, naming the office, the report, and
 which Power BI menu item to use instead.
 
-### Add the logo assets
+### Replace the logo assets
 
-Drop `da-logo.png` and `bp.png` into `public/`. Until then a lettered monogram renders in
-their place — the portal does not show a broken image.
+The DA seal and the Bagong Pilipinas logo live in `public/` as `da-logo.png` and `bp.png`,
+the paths named in `SITE.logos`. Replace a file under the same name. If one ever fails to
+load, a lettered monogram renders in its place — the portal does not show a broken image.
+
+Keep them small: the largest any logo is shown is 56 px, so about three times that is
+plenty. `bp.png` was scaled down from a 960 px original for this reason.
 
 ### Adjust the palette or type
 
@@ -346,7 +350,6 @@ For the office to confirm:
   currently render as the words, which sits oddly in a monospace column beside four-letter
   codes. `RD` would collide between the two.
 - **Office blurbs.** Every `blurb` is empty; the tiles and report pages simply omit them.
-- Final DA logo and Bagong Pilipinas logo image files.
 - Whether the contact details — carried over from the RGA footer as defaults — are
   correct.
 

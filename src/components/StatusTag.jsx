@@ -1,18 +1,16 @@
 /**
- * The portal's one status vocabulary: a dashboard is either "Live" or
- * "Coming soon". Used on the switchboard, the report bar, and the placeholder,
- * so the same report reads the same way everywhere.
+ * The portal's one status vocabulary: a report is either "Live" or
+ * "Coming soon". Used on the switchboard, the rail, and the report tabs, so
+ * the same report reads the same way everywhere.
  *
- * Clay is reserved for the unpublished state and is used nowhere else.
+ * Gold is reserved for the unpublished state and is used nowhere else.
  */
 export default function StatusTag({ live, showLabel = true }) {
   const label = live ? "Live" : "Coming soon";
 
-  const pill = live
-    ? "bg-leaf-100 text-leaf-700"
-    : "bg-clay-100 text-clay-600";
+  const pill = live ? "bg-mint-100 text-green-700" : "bg-gold-100 text-gold-700";
 
-  const dot = live ? "bg-leaf-500" : "bg-clay-600";
+  const dot = live ? "bg-green-600" : "bg-gold-600";
 
   if (!showLabel) {
     return (

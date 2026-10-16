@@ -1,9 +1,9 @@
 {
-  "name": "darfo2-wms-powerbi-portal",
+  "name": "darfo2-private-powerbi-portal",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Public Power BI dashboard portal for the DA-RFO 02 Warehouse Management System",
+  "description": "Internal Power BI dashboard portal for DA-RFO 02, organised by office",
   "scripts": {
     "dev": "vite",
     "build": "node scripts/check-config.mjs && vite build",

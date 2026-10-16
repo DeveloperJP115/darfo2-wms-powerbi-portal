@@ -1,27 +1,31 @@
 /**
- * Refuses to build a bundle whose dashboard config is broken.
+ * Refuses to build a bundle whose office config is broken.
  *
- * Wired into `npm run build`, so a bad slug or the wrong kind of Power BI link
- * cannot reach Vercel. Errors stop the build; warnings are printed and let it
- * through, which is what keeps the gate something people fix rather than work
- * around.
+ * Wired into `npm run build`, so a bad slug, a group that matches no heading, or
+ * the wrong kind of Power BI link cannot reach Vercel. Errors stop the build;
+ * warnings are printed and let it through, which is what keeps the gate
+ * something people fix rather than work around.
  *
  * This runs under plain Node with no build step, because the config and the
  * validator are ordinary ES modules with no JSX between them. Keep it that way —
  * the moment this needs bundling it stops being usable as a build gate.
  */
 
-import { DASHBOARDS } from "../src/config/stations.js";
+import { GROUPS, OFFICES } from "../src/config/offices.js";
 import { validateConfig } from "../src/config/validate.js";
 
-const CONFIG_PATH = "src/config/stations.js";
+const CONFIG_PATH = "src/config/offices.js";
 
-const problems = validateConfig(DASHBOARDS);
+const problems = validateConfig(
+  OFFICES,
+  GROUPS.map((group) => group.id),
+);
 const errors = problems.filter((problem) => problem.level === "error");
 const warnings = problems.filter((problem) => problem.level === "warning");
 
 if (problems.length === 0) {
-  console.log(`config ok — ${DASHBOARDS.length} dashboards, nothing to report`);
+  const reports = OFFICES.reduce((total, office) => total + office.reports.length, 0);
+  console.log(`config ok — ${OFFICES.length} offices, ${reports} reports, nothing to report`);
   process.exit(0);
 }
 

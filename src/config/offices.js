@@ -82,7 +82,9 @@ export const GROUPS = [
  * and have not been checked by the office. So is "Isabela Experiment Station" —
  * the original brief called it Ilagan. BES and SCRC are confirmed.
  */
-const placeholder = () => [{ slug: "dashboard", name: "Dashboard", embedUrl: "", blurb: "" }];
+const placeholder = () => [
+	{ slug: "dashboard", name: "Dashboard", embedUrl: "", blurb: "" },
+];
 
 export const OFFICES = [
 	{
@@ -204,7 +206,8 @@ export const officesInGroup = (groupId) =>
 	OFFICES.filter((office) => office.group === groupId);
 
 /** Look up an office by its route slug. Returns undefined for unknown slugs. */
-export const findOffice = (slug) => OFFICES.find((office) => office.slug === slug);
+export const findOffice = (slug) =>
+	OFFICES.find((office) => office.slug === slug);
 
 /**
  * Look up one report inside one office.

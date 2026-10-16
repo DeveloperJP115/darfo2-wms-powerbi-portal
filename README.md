@@ -18,64 +18,60 @@ feel.
 report embedding Power BI in a responsive iframe, and a rail that expands in place for
 switching between offices.
 
-**Is not:** there is no backend, no database, no authentication, no API routes, no
-server-side code. No Power BI JavaScript SDK, no embed tokens, no service principals, no
-Power BI REST API. No CMS — the config file is the CMS. Read-only presentation only.
+**Is not:** there is no backend, no database, no API routes, no server-side code. No Power
+BI JavaScript SDK, no embed tokens, no service principals, no Power BI REST API. No CMS —
+the config file is the CMS. Read-only presentation only.
 
 ---
 
-## ⚠️ "Internal" describes the audience, not a protection
+## Who can see what
 
-This portal is for internal presentation. That is a statement about **who it is for**, not
-about who *can* reach it.
+**The portal is open; the reports are not.** Anyone with the address can load the portal
+and see which offices and reports exist. The report content itself sits behind Power BI's
+own sign-in.
 
-Every dashboard is embedded using Power BI's **"Publish to web (public)"**, which produces
-a URL of the form `https://app.powerbi.com/view?r=<TOKEN>`. **That makes the report
-viewable by anyone with the link, with no login.** Nothing in this repository adds access
-control, and nothing in the copy should imply otherwise.
+Every report is embedded with Power BI's **secure embed** (File › Embed report › Website
+or portal), which produces a URL of the form
+`https://app.powerbi.com/reportEmbed?reportId=<GUID>&autoAuth=true&ctid=<TENANT>`. Inside
+the frame, Power BI asks the viewer to sign in with their Microsoft account and shows the
+report only if that account has been given view permission. The portal adds none of this
+— it is entirely Power BI's.
 
-If the office ever needs the portal genuinely restricted, that is a backend effort —
-Power BI "Embed for your organization" plus Azure AD, or a gated host — and is out of
-scope here.
+**The embed URLs are not secrets.** A report ID and a tenant ID only identify a report;
+they grant nothing. Anyone can read them from the page, and that is fine. Microsoft:
 
-**It goes further than "the data is public", and this is the part worth reading twice.**
-Microsoft's own documentation states:
+> The **Embed** option doesn't automatically permit users to view the report. Set view
+> permissions in the Power BI service.
 
-> It includes viewing detail-level data that your reports aggregate. As a result, anyone
-> can access the underlying data in your model even if your report does not display it.
+So the protection lives in **who is given access in Power BI**, which makes these the
+rules worth keeping:
 
-So a report showing only regional totals still exposes **every underlying row** to anyone
-who queries the model. That stake is higher now than it was for the warehouse portal this
-grew out of: the offices here include Finance and Administrative, Regulatory, and
-Planning, Monitoring and Evaluation.
+- Share reports with named people or groups, not with the whole organisation, unless the
+  whole organisation should see them.
+- Only approve access requests from people you recognise.
+- Anyone given view access sees what the report shows, and, depending on the report's
+  export settings, the data behind it. Row-level security does apply to embedded reports
+  if a model needs it.
+- **Never paste a Publish to web link.** That option makes a report and every row of its
+  model viewable by anyone on the internet with no sign-in. The build refuses those links
+  for this reason.
 
-**Raised and answered, 13 August 2026:** the office confirms data privacy is handled
-within the Power BI reports themselves, so the models are not expected to carry personal
-data. That answer predates the office-wide scope — **re-ask it for each division before
-its first report is published.**
+### Secure embed facts that shape what you can promise
 
-Keep the distinction in mind when building any report: the protection has to be in what
-the **model contains**, not in what the visuals **display**. Dropping a column in Power
-Query keeps it out of the published model; hiding it from a visual does not.
-Pre-aggregating in Power Query or a SharePoint view is the strongest version of this.
+From [Microsoft's documentation](https://learn.microsoft.com/en-us/power-bi/collaborate-share/service-embed-secure):
 
-Nothing secret lives in this codebase. The embed URLs are public tokens by definition,
-which is why they sit in plain config rather than environment variables.
-
-### Two more publish-to-web facts that shape what you can promise
-
-**Data is cached for one hour** from the moment it is retrieved. A dashboard on the
-projector can be an hour behind — and because each element caches independently, during a
-refresh a viewer can see *a mix of current and previous values on the same screen*.
-Microsoft explicitly does not recommend publish-to-web for data that refreshes often.
-Nothing is shown on the page about this yet; that was considered and deliberately deferred
-until a real report exists to be wrong about.
-
-**Not supported by publish-to-web**, for whoever builds the reports: row-level security,
-DirectQuery, live connections, shared semantic models in another workspace, report-level
-DAX measures, R and Python visuals, paginated reports, and **mobile layout views**. That
-last one means a report on a phone is the desktop layout scaled down — be honest about
-that in any claim about mobile support.
+- **Each viewer needs a Power BI Pro or Premium Per User licence**, unless both the report
+  and its semantic model sit on Premium or Fabric F64-or-higher capacity. Free users are
+  prompted to upgrade instead of seeing the report.
+- **Sign-in opens a pop-up**, so pop-ups must be allowed for the portal.
+- **Viewers sign in again in each new browser window**, and again when their sign-in
+  expires (one hour by default, set by the organisation's Microsoft Entra settings). Sign
+  in on the projector machine before a meeting, not during it.
+- **Microsoft guest (B2B) accounts are not supported.**
+- **URL filters are not a security feature** — a viewer can edit or remove them.
+- The page hosting the report must be served over **HTTPS**, and must not send
+  `Cross-Origin-Opener-Policy: same-origin`, which breaks sign-in. Vercel serves HTTPS and
+  `vercel.json` sets no such header — keep it that way.
 
 ---
 
@@ -144,17 +140,20 @@ offices may both use `dashboard`, because the route carries the office as well.
 
 ### Paste in a Power BI embed URL
 
-In Power BI: **File › Embed report › Publish to web (public)**, then copy the address only
-— not the whole iframe snippet. It looks like:
+In Power BI: **File › Embed report › Website or portal**, then copy the link under "Here's
+a link you can use to embed this content" — not the whole iframe snippet. It looks like:
 
 ```
-https://app.powerbi.com/view?r=eyJrIjoiMWEyYjNjNGQ...
+https://app.powerbi.com/reportEmbed?reportId=aaaaaaaa-0000-1111-2222-bbbbbbbbbbbb&autoAuth=true&ctid=...
 ```
+
+Then give the people who should see it view permission in Power BI — the link alone lets
+nobody in.
 
 Leave `embedUrl` as an empty string until the report exists; the page then shows a "Report
-coming soon" card instead of a broken frame. Paste the wrong kind of link and the build
-refuses to run, naming the office, the report, and which Power BI menu item to use
-instead.
+coming soon" card instead of a broken frame. Paste the wrong kind of link — including a
+Publish to web link — and the build refuses to run, naming the office, the report, and
+which Power BI menu item to use instead.
 
 ### Add the logo assets
 
@@ -339,8 +338,8 @@ Design notes, in case you extend it:
 
 For the office to confirm:
 
-- **Power BI "Publish to web" URLs.** None exist for any office. The iframe path has never
-  run against a real report — only against a local stub. Do not describe it as proven.
+- **Embed links for every office but PMED.** PMED's report was the first live one, signed
+  into and presented on 15 October 2026. The others still show "Report coming soon".
 - **The eight division names.** Drafted here, unchecked. So is "Isabela Experiment
   Station"; the original brief called it *Ilagan*.
 - **Whether Research Division and Regulatory Division have official acronyms.** They

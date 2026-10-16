@@ -68,15 +68,15 @@ export const GROUPS = [
  *
  * To add one: add an entry. The tile, the rail entry and the routes all follow.
  *
- * reports: an office holds zero or more. `embedUrl` takes the Power BI
- *   "Publish to web (public)" link, which looks like
- *   https://app.powerbi.com/view?r=<LONG_TOKEN>
- *   Leave it an empty string until the report exists — the page then renders a
- *   "not published yet" card rather than a broken iframe.
+ * reports: an office holds zero or more. `embedUrl` takes the Power BI secure
+ *   embed link, from File › Embed report › Website or portal, which looks like
+ *   https://app.powerbi.com/reportEmbed?reportId=<GUID>&autoAuth=true&ctid=<TENANT>
+ *   Viewers sign in inside the frame, so the link is not a secret. Leave it an
+ *   empty string until the report exists — the page then renders a "not
+ *   published yet" card rather than a broken iframe.
  *
- * Every office currently holds one placeholder report, because none of the
- * real ones have been published. Replace the name and add siblings as the
- * office confirms them.
+ * Offices without a real report hold one placeholder. Replace the name and add
+ * siblings as the office confirms them.
  *
  * UNCONFIRMED: the expanded names of the eight division codes are drafted here
  * and have not been checked by the office. So is "Isabela Experiment Station" —

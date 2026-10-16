@@ -173,9 +173,9 @@ function ReportFrame({ dashboard }) {
  *   unusable  → the wrong link was pasted, and we say so
  *   usable    → the report, behind a loading cover
  *
- * The URL comes from Power BI's "Publish to web (public)" feature, so the iframe
- * needs no token and no authentication — see the README for what that means for
- * data visibility.
+ * The URL comes from Power BI's secure embed (Website or portal), so the iframe
+ * needs no token from the portal: Power BI asks the viewer to sign in inside the
+ * frame. See the README for who can see what.
  *
  * The prop is still named `dashboard` though it now receives a report: a report
  * carries every field read here, and renaming it would churn a file whose logic

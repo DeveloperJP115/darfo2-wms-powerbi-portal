@@ -14,7 +14,7 @@
 /**
  * The only shape of Power BI link the portal accepts: secure embed, from
  * File › Embed report › Website or portal. Power BI asks the viewer to sign in
- * inside the frame, and shows "Request access" to anyone without permission.
+ * inside the frame and turns away anyone without permission.
  */
 export const EMBED_URL_PREFIX = "https://app.powerbi.com/reportEmbed?reportId=";
 

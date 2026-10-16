@@ -31,8 +31,8 @@ export const SITE = {
 		"Dashboards for the divisions, stations and research centers of the " +
 		"regional field office. Choose an office to view its reports.",
 
-	// Drop the real image files into /public at these paths. Until then, the
-	// header and footer render a lettered monogram instead of a broken image.
+	// Image files in /public. If one fails to load, a lettered monogram renders
+	// in its place instead of a broken image.
 	logos: {
 		da: "/da-logo.png",
 		bagongPilipinas: "/bp.png",

@@ -8,7 +8,7 @@ import {
   isLive,
   officesInGroup,
 } from "./offices.js";
-import { validateConfig } from "./validate.js";
+import { describeEmbedUrlProblem, validateConfig } from "./validate.js";
 
 /*
  * offices.js is edited by hand, by whoever is looking after the portal rather
@@ -17,6 +17,9 @@ import { validateConfig } from "./validate.js";
  */
 
 const GOOD_URL =
+  "https://app.powerbi.com/reportEmbed?reportId=ac5acc8b-52ad-4e07-b9d8-54f2459179b3&autoAuth=true&ctid=6898061d-1a6b-4e39-adfc-dc8afe072201";
+
+const PUBLIC_URL =
   "https://app.powerbi.com/view?r=eyJrIjoiMWEyYjNjNGQ1ZTZmN2c4aDlpMGoxazJsIn0";
 
 describe("the live config", () => {
@@ -144,6 +147,7 @@ describe("isLive", () => {
     ["an empty URL", { embedUrl: "" }, false],
     ["a whitespace URL", { embedUrl: "   " }, false],
     ["an authenticated link", { embedUrl: "https://app.powerbi.com/groups/me/r/a1" }, false],
+    ["a public publish-to-web link", { embedUrl: PUBLIC_URL }, false],
     ["a usable URL", { embedUrl: GOOD_URL }, true],
   ])("%s gives %s", (_label, report, expected) => {
     expect(isLive(report)).toBe(expected);
@@ -151,6 +155,34 @@ describe("isLive", () => {
 
   test.each([[undefined], [null], [{}]])("survives %s", (report) => {
     expect(isLive(report)).toBe(false);
+  });
+});
+
+describe("describeEmbedUrlProblem", () => {
+  test("accepts the link from Embed report › Website or portal", () => {
+    expect(describeEmbedUrlProblem(GOOD_URL)).toBeNull();
+  });
+
+  test("accepts extra parameters Microsoft documents, such as pageName", () => {
+    expect(describeEmbedUrlProblem(`${GOOD_URL}&pageName=ReportSection2`)).toBeNull();
+  });
+
+  test("rejects a publish-to-web link, because anyone could see the report", () => {
+    expect(describeEmbedUrlProblem(PUBLIC_URL)).toContain("Website or portal");
+  });
+
+  test.each([
+    ["the whole iframe snippet", `<iframe src="${GOOD_URL}"></iframe>`],
+    ["a link to the report inside Power BI", "https://app.powerbi.com/groups/me/reports/a1"],
+    ["no reportId", "https://app.powerbi.com/reportEmbed?autoAuth=true"],
+    ["a cut-off reportId", "https://app.powerbi.com/reportEmbed?reportId=ac5acc8b-52ad"],
+    [
+      "another host",
+      "https://example.com/reportEmbed?reportId=ac5acc8b-52ad-4e07-b9d8-54f2459179b3",
+    ],
+    ["not a web address", "not a url"],
+  ])("rejects %s", (_label, url) => {
+    expect(describeEmbedUrlProblem(url)).not.toBeNull();
   });
 });
 

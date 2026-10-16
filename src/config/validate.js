@@ -11,8 +11,14 @@
  * without any of them fighting over module load order.
  */
 
-/** The only shape of Power BI link that works in a public iframe. */
-export const EMBED_URL_PREFIX = "https://app.powerbi.com/view?r=";
+/**
+ * The only shape of Power BI link the portal accepts: secure embed, from
+ * File › Embed report › Website or portal. Power BI asks the viewer to sign in
+ * inside the frame, and shows "Request access" to anyone without permission.
+ */
+export const EMBED_URL_PREFIX = "https://app.powerbi.com/reportEmbed?reportId=";
+
+const GUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Why an embed URL will not work, in words that name the fix.
@@ -42,19 +48,15 @@ export function describeEmbedUrlProblem(url) {
   }
 
   if (trimmed.includes("/groups/")) {
-    return "is a link to the report inside Power BI, which asks viewers to sign in. Use File › Embed report › Publish to web (public) instead.";
-  }
-
-  if (trimmed.includes("/reportEmbed")) {
-    return "is the secure embed address, which needs an access token the portal does not have. Use Publish to web (public) instead.";
+    return "is a link to the report inside Power BI. Use File › Embed report › Website or portal instead.";
   }
 
   /*
    * Parsed rather than string-matched, because Power BI's documented URLs may
-   * carry extra parameters — `&filter=Regions/Country eq 'Canada'` is straight
-   * out of Microsoft's own examples, spaces and quote marks included. Slicing
-   * everything after `r=` would reject those, so only the `r` parameter itself
-   * is inspected and anything else on the query string is left alone.
+   * carry extra parameters — `&pageName=ReportSection2` and URL filters are
+   * straight out of Microsoft's own examples, spaces and quote marks included.
+   * Only `reportId` is inspected; anything else on the query string is left
+   * alone.
    */
   let parsed;
   try {
@@ -65,28 +67,19 @@ export function describeEmbedUrlProblem(url) {
 
   const path = parsed.pathname.replace(/\/$/, "");
 
-  if (parsed.origin !== "https://app.powerbi.com" || path !== "/view") {
+  // Refused rather than merely discouraged: one pasted public link would put a
+  // report, and every row of its model, in front of anyone on the internet.
+  if (parsed.origin === "https://app.powerbi.com" && path === "/view") {
+    return "is a Publish to web link, which lets anyone on the internet see the report without signing in. Use File › Embed report › Website or portal instead.";
+  }
+
+  if (parsed.origin !== "https://app.powerbi.com" || path !== "/reportEmbed") {
     return `should begin with ${EMBED_URL_PREFIX}`;
   }
 
-  const token = parsed.searchParams.get("r");
-
-  if (token === null) {
-    return "has no r= parameter, which is the part that identifies the report.";
-  }
-
-  if (token === "") {
-    return "has nothing after r=, which is the part that identifies the report.";
-  }
-
-  // Real publish-to-web tokens are long base64url strings — a short one is a
-  // copy that got cut off partway.
-  if (token.length < 20) {
-    return "has a token after r= that looks cut off — copy the whole address.";
-  }
-
-  if (!/^[A-Za-z0-9_=-]+$/.test(token)) {
-    return "has a token after r= containing characters it should not, so something was mangled in copying.";
+  // A report ID is a GUID, so anything shorter is a copy that got cut off.
+  if (!GUID_PATTERN.test(parsed.searchParams.get("reportId") ?? "")) {
+    return "has a missing or cut-off reportId — copy the whole address.";
   }
 
   return null;

@@ -55,6 +55,12 @@ export default function Masthead() {
                 monogram="DA"
                 className="size-9"
               />
+              <BrandLogo
+                src={SITE.logos.bagongPilipinas}
+                alt="Bagong Pilipinas"
+                monogram="BP"
+                className="size-9"
+              />
               <span className="text-slate-900 font-semibold">{SITE.office}</span>
             </span>
 

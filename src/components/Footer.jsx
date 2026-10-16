@@ -1,5 +1,4 @@
 import { SITE } from "../config/offices.js";
-import BrandLogo from "./BrandLogo.jsx";
 
 /*
  * The footer is the one dark block in the portal, and that is deliberate: on a
@@ -26,22 +25,7 @@ export default function Footer() {
     <footer className="bg-green-800 mt-auto text-white">
       <div className="mx-auto grid max-w-[104rem] gap-14 px-6 py-20 md:grid-cols-2 md:px-10">
         <div>
-          <div className="flex items-center gap-4">
-            <BrandLogo
-              src={SITE.logos.da}
-              alt="Department of Agriculture"
-              monogram="DA"
-              className="size-14"
-            />
-            <BrandLogo
-              src={SITE.logos.bagongPilipinas}
-              alt="Bagong Pilipinas"
-              monogram="BP"
-              className="size-14"
-            />
-          </div>
-
-          <p className="font-display mt-7 text-2xl leading-snug font-semibold tracking-tight">
+          <p className="font-display text-2xl leading-snug font-semibold tracking-tight">
             {SITE.office}
           </p>
 

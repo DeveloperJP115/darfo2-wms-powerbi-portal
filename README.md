@@ -161,8 +161,9 @@ The DA seal and the Bagong Pilipinas logo live in `public/` as `da-logo.png` and
 the paths named in `SITE.logos`. Replace a file under the same name. If one ever fails to
 load, a lettered monogram renders in its place — the portal does not show a broken image.
 
-Keep them small: the largest any logo is shown is 56 px, so about three times that is
-plenty. `bp.png` was scaled down from a 960 px original for this reason.
+Keep them small: logos appear only in the rail and the home banner, at 36 px, so a file
+of a few hundred pixels at most is plenty. The footer deliberately carries no logos.
+`bp.png` was scaled down from a 960 px original for this reason.
 
 ### Adjust the palette or type
 

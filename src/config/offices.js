@@ -93,7 +93,15 @@ export const OFFICES = [
 		name: "Planning, Monitoring and Evaluation Division",
 		group: "divisions",
 		blurb: "",
-		reports: placeholder(),
+		reports: [
+			{
+				slug: "dashboard",
+				name: "Dashboard",
+				embedUrl:
+					"https://app.powerbi.com/reportEmbed?reportId=ac5acc8b-52ad-4e07-b9d8-54f2459179b3&autoAuth=true&ctid=6898061d-1a6b-4e39-adfc-dc8afe072201",
+				blurb: "",
+			},
+		],
 	},
 	{
 		slug: "amad",

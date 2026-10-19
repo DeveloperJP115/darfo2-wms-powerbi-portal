@@ -14,9 +14,10 @@ import TimeOfDayArt from "./TimeOfDayArt.jsx";
  *
  * The wash runs from mint into the sky's own colour: the sun's peach by day,
  * pale slate at night. It used to end in the RGA's lemon yellow, which beside
- * an orange sun made two near-identical warm hues — close enough to read as a
- * mistake rather than a choice. One warm colour, the sun's, now carries the
- * right-hand end.
+ * an orange sun and a mustard label made three near-identical warm hues — close
+ * enough to read as mistakes rather than choices. One warm colour, the sun's,
+ * now carries the right-hand end, and the banner uses no gold at all, which
+ * leaves yellow to the "Coming soon" labels below it.
  */
 
 // The far end of the banner's wash, matched to the sky in the drawing.
@@ -114,7 +115,7 @@ export default function Masthead() {
               <span className="text-slate-500">{SITE.subtitle}</span>
             </div>
 
-            <p className="eyebrow text-gold-700 mt-6">{SITE.audience}</p>
+            <p className="eyebrow text-green-700 mt-6">{SITE.audience}</p>
           </div>
 
           {/* Hidden on narrow screens, where it would squeeze the greeting.

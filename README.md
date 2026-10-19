@@ -188,6 +188,13 @@ drawer in Firefox.
 Tokens live in the `@theme` block of `src/index.css`. **Gold has exactly one job: marking
 a report that is not published yet.** Nothing else may use it.
 
+The `sun`, `sky` and `night` tokens exist only for the home greeting. The banner is the
+sky at the current time of day: blue fading to a warm horizon at dawn, clear blue at noon,
+apricot in the afternoon, navy at night, with a sun or moon over green hills in the corner.
+It was chosen from four directions compared side by side, after a pastel wash barely
+registered on a projector. The warm tones are oranges, deliberately not gold, because the
+"Coming soon" labels just below need yellow to themselves.
+
 Tailwind's content sources are declared explicitly at the top of that file rather than
 auto-detected. Automatic detection scans the whole project including `docs/`, where the
 spec and plan quote class names in code blocks — which turned documentation into real CSS
@@ -306,7 +313,8 @@ src/
     PrivacyNotice.jsx    the data privacy notice, once per browser tab
     OfficeRail.jsx       the collapsible office navigation
     ErrorBoundary.jsx    turns a render fault into a page, not a blank screen
-    Masthead.jsx         home header, brand mark and greeting card
+    Masthead.jsx         home header, brand mark and the Tagalog greeting with the date
+    TimeOfDayArt.jsx     the greeting's sun or moon over green hills
     OfficeTile.jsx       one switch on the home switchboard
     ReportHeader.jsx     slim report chrome: home, breadcrumb, status
     ReportTabs.jsx       the current office's reports, and only those
@@ -314,6 +322,8 @@ src/
     StatusTag.jsx        the one Live / Coming soon vocabulary
     BrandLogo.jsx        logo image with monogram fallback
     Footer.jsx           office identity, vision, contact
+  lib/
+    greeting.js          which Tagalog greeting fits the hour, with its tests
   pages/
     Home.jsx             masthead plus the office switchboard
     ReportPage.jsx       the /:office and /:office/:report routes

@@ -16,7 +16,6 @@ import { isValidEmbedUrl } from "./validate.js";
 
 export const SITE = {
 	title: "DA–RFO 02 Analytics Portal",
-	subtitle: "Regional Field Office 02 — Cagayan Valley",
 	office: "Department of Agriculture Regional Field Office 02",
 
 	/*

@@ -10,22 +10,40 @@ import TimeOfDayArt from "./TimeOfDayArt.jsx";
  * The greeting is the one place the portal addresses the room rather than
  * presenting data. It carries no figures — the portal holds no data of its own,
  * every number lives inside a Power BI report. What it does carry is the day:
- * a Tagalog greeting, the date, and a drawing of the sky at that time.
+ * a Tagalog greeting, the date, and the sky at that time.
  *
- * The wash runs from mint into the sky's own colour: the sun's peach by day,
- * pale slate at night. It used to end in the RGA's lemon yellow, which beside
- * an orange sun and a mustard label made three near-identical warm hues — close
- * enough to read as mistakes rather than choices. One warm colour, the sun's,
- * now carries the right-hand end, and the banner uses no gold at all, which
- * leaves yellow to the "Coming soon" labels below it.
+ * The banner IS the sky: blue fading to a warm horizon at dawn, clear blue at
+ * noon, apricot in the afternoon, deep night for gabi. It was chosen on
+ * 19 Oct 2026 from four directions put side by side, after a mint-to-peach
+ * wash read as too pale — on a projector, which washes colour out further,
+ * pastels barely register as a block at all.
  */
 
-// The far end of the banner's wash, matched to the sky in the drawing.
+// Top of the sky to the horizon, for each part of the day.
 const SKY = {
-  umaga: "to-sun-100",
-  tanghali: "to-sun-100",
-  hapon: "to-sun-100",
-  gabi: "to-slate-200",
+  umaga: "from-sky-200 to-sun-100",
+  tanghali: "from-sky-300 to-sky-100",
+  hapon: "from-sky-200 via-sun-100 to-sun-200",
+  gabi: "from-slate-900 to-night",
+};
+
+/*
+ * Text for a light sky and for the night. The day date is near-black at 70%
+ * rather than slate-500, which managed only about 2.8:1 against the noon blue.
+ */
+const TONES = {
+  day: {
+    greeting: "text-green-800",
+    date: "text-slate-900/70",
+    office: "text-slate-900",
+    label: "text-green-700",
+  },
+  night: {
+    greeting: "text-white",
+    date: "text-mint-100/80",
+    office: "text-white",
+    label: "text-mint-100/70",
+  },
 };
 
 // The Philippine way of writing a date: "Monday, October 19, 2026".
@@ -56,6 +74,18 @@ export default function Masthead() {
   const now = useNow();
   const period = periodOf(now.getHours());
 
+  const night = period === "gabi";
+  const tones = TONES[night ? "night" : "day"];
+
+  const bagongPilipinas = (
+    <BrandLogo
+      src={SITE.logos.bagongPilipinas}
+      alt="Bagong Pilipinas"
+      monogram="BP"
+      className={night ? "size-7" : "size-9"}
+    />
+  );
+
   return (
     <header>
       <div className="border-slate-200 flex items-center gap-3 border-b bg-white px-6 py-3 md:px-10">
@@ -84,16 +114,16 @@ export default function Masthead() {
 
       <div className="px-6 pt-6 md:px-10">
         <div
-          className={`from-mint-50 ${SKY[period]} flex items-center gap-8 overflow-hidden rounded-2xl bg-gradient-to-r via-white px-7 py-7 md:px-9`}
+          className={`${SKY[period]} flex items-center gap-8 overflow-hidden rounded-2xl bg-gradient-to-b px-7 py-7 md:px-9`}
         >
           <div className="min-w-0 flex-1">
             <p
               lang="fil"
-              className="text-green-800 font-display text-2xl font-bold tracking-tight md:text-3xl"
+              className={`${tones.greeting} font-display text-2xl font-bold tracking-tight md:text-3xl`}
             >
               {GREETINGS[period]}
             </p>
-            <p className="text-slate-500 mt-1">{DATE.format(now)}</p>
+            <p className={`${tones.date} mt-1`}>{DATE.format(now)}</p>
 
             <div className="mt-5 flex items-center gap-3">
               <BrandLogo
@@ -102,16 +132,20 @@ export default function Masthead() {
                 monogram="DA"
                 className="size-9"
               />
-              <BrandLogo
-                src={SITE.logos.bagongPilipinas}
-                alt="Bagong Pilipinas"
-                monogram="BP"
-                className="size-9"
-              />
-              <span className="text-slate-900 font-semibold">{SITE.office}</span>
+              {/* The emblem has no background of its own, and its blue all but
+                  vanishes into the night sky, so after dark it sits on a white
+                  disc to match the DA seal. */}
+              {night ? (
+                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-white">
+                  {bagongPilipinas}
+                </span>
+              ) : (
+                bagongPilipinas
+              )}
+              <span className={`${tones.office} font-semibold`}>{SITE.office}</span>
             </div>
 
-            <p className="eyebrow text-green-700 mt-6">{SITE.audience}</p>
+            <p className={`eyebrow ${tones.label} mt-6`}>{SITE.audience}</p>
           </div>
 
           {/* Hidden on narrow screens, where it would squeeze the greeting.

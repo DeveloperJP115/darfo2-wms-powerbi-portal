@@ -49,13 +49,20 @@
   --color-gold-100: #fef9c3;
 
   /*
-   * SUN — the home greeting's time-of-day drawing, and nothing else. Warm
-   * oranges, deliberately NOT gold: gold means "not published yet", and those
-   * labels sit just below the greeting.
+   * SUN and SKY — the home greeting, and nothing else. The banner is the sky
+   * at the current time of day: blue by day with a warm horizon, deep night
+   * for gabi. The warm tones are oranges, deliberately NOT gold: gold means
+   * "not published yet", and those labels sit just below the greeting.
    */
   --color-sun-100: #ffedd5;
+  --color-sun-200: #fed7aa;
   --color-sun-300: #fdba74;
   --color-sun-400: #fb923c;
+
+  --color-sky-100: #e0f2fe;
+  --color-sky-200: #bae6fd;
+  --color-sky-300: #7dd3fc;
+  --color-night: #312e81;
 
   --color-slate-900: #0f172a;
   --color-slate-500: #64748b;

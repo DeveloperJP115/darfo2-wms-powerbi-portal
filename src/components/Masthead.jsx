@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { SITE } from "../config/offices.js";
+import { GREETINGS, periodOf } from "../lib/greeting.js";
 import BrandLogo from "./BrandLogo.jsx";
 
 /*
@@ -6,15 +8,38 @@ import BrandLogo from "./BrandLogo.jsx";
  *
  * The greeting is the one place the portal addresses the room rather than
  * presenting data. It carries no figures — the portal holds no data of its own,
- * every number lives inside a Power BI report.
+ * every number lives inside a Power BI report. What it does carry is the day:
+ * a Tagalog greeting and the date.
  */
-function greeting(hour = new Date().getHours()) {
-  if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
+
+// The Philippine way of writing a date: "Monday, October 19, 2026".
+const DATE = new Intl.DateTimeFormat("en-PH", {
+  weekday: "long",
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+
+/*
+ * The current time, rechecked every minute. A projector can sit on the home
+ * page for a whole meeting, so the greeting has to turn from umaga to
+ * tanghali at noon, and the date has to roll over at midnight, by themselves.
+ */
+function useNow() {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  return now;
 }
 
 export default function Masthead() {
+  const now = useNow();
+  const period = periodOf(now.getHours());
+
   return (
     <header>
       <div className="border-slate-200 flex items-center gap-3 border-b bg-white px-6 py-3 md:px-10">
@@ -43,11 +68,15 @@ export default function Masthead() {
 
       <div className="px-6 pt-6 md:px-10">
         <div className="from-mint-50 to-gold-100 rounded-2xl bg-gradient-to-r via-white px-7 py-7 md:px-9">
-          <p className="text-green-800 font-display text-2xl font-bold tracking-tight md:text-3xl">
-            {greeting()}
+          <p
+            lang="fil"
+            className="text-green-800 font-display text-2xl font-bold tracking-tight md:text-3xl"
+          >
+            {GREETINGS[period]}
           </p>
+          <p className="text-slate-500 mt-1">{DATE.format(now)}</p>
 
-          <div className="mt-4 flex flex-wrap items-center gap-x-8 gap-y-3">
+          <div className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-3">
             <span className="flex items-center gap-3">
               <BrandLogo
                 src={SITE.logos.da}

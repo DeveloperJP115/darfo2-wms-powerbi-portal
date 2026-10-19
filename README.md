@@ -157,12 +157,14 @@ which Power BI menu item to use instead.
 
 ### Replace the logo assets
 
-The DA seal and the Bagong Pilipinas logo live in `public/` as `da-logo.png` and `bp.png`,
-the paths named in `SITE.logos`. Replace a file under the same name. If one ever fails to
-load, a lettered monogram renders in its place — the portal does not show a broken image.
+The DA seal, the Bagong Pilipinas emblem and the National Telecommunications Commission seal
+live in `public/` as `da-logo.png`, `bp.png` and `ntc.png`, the paths named in
+`SITE.logos`. Replace a file under the same name. If one ever fails to load, a lettered
+monogram renders in its place — the portal does not show a broken image.
 
-Keep them small: logos appear only in the rail and the home banner, at 36 px, so a file
-of a few hundred pixels at most is plenty. The footer deliberately carries no logos.
+Logos appear in the rail and the home banner at 36 px, and all three along the bottom of
+the footer at 80 px, each on a white disc. Keep the files small: a few hundred pixels at
+most is plenty.
 
 `bp.png` is the Bagong Pilipinas **emblem only**, cropped from the official 960 px logo.
 The "BAGONG PILIPINAS" lettering is only 7.4% of the full logo's height, so at these sizes

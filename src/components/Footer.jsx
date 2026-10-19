@@ -39,7 +39,34 @@ export default function Footer() {
     <footer className="bg-green-800 mt-auto text-white">
       <div className="mx-auto grid max-w-[104rem] gap-14 px-6 py-20 md:grid-cols-2 md:px-10">
         <div>
-          <p className="font-display text-2xl leading-snug font-semibold tracking-tight">
+          <div className="flex flex-wrap items-center gap-5">
+            <LogoDisc>
+              <BrandLogo
+                src={SITE.logos.da}
+                alt="Department of Agriculture"
+                monogram="DA"
+                className="size-20"
+              />
+            </LogoDisc>
+            <LogoDisc>
+              <BrandLogo
+                src={SITE.logos.bagongPilipinas}
+                alt="Bagong Pilipinas"
+                monogram="BP"
+                className="size-18"
+              />
+            </LogoDisc>
+            <LogoDisc>
+              <BrandLogo
+                src={SITE.logos.ntc}
+                alt="National Telecommunications Commission"
+                monogram="NTC"
+                className="size-20"
+              />
+            </LogoDisc>
+          </div>
+
+          <p className="font-display mt-8 text-2xl leading-snug font-semibold tracking-tight">
             {SITE.office}
           </p>
 
@@ -77,33 +104,6 @@ export default function Footer() {
               </a>
             </ContactRow>
           </dl>
-        </div>
-
-        <div className="border-white/15 flex flex-wrap items-center gap-5 border-t pt-10 md:col-span-2">
-          <LogoDisc>
-            <BrandLogo
-              src={SITE.logos.da}
-              alt="Department of Agriculture"
-              monogram="DA"
-              className="size-20"
-            />
-          </LogoDisc>
-          <LogoDisc>
-            <BrandLogo
-              src={SITE.logos.bagongPilipinas}
-              alt="Bagong Pilipinas"
-              monogram="BP"
-              className="size-18"
-            />
-          </LogoDisc>
-          <LogoDisc>
-            <BrandLogo
-              src={SITE.logos.ntc}
-              alt="National Telecommunications Commission"
-              monogram="NTC"
-              className="size-20"
-            />
-          </LogoDisc>
         </div>
       </div>
     </footer>

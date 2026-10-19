@@ -42,8 +42,8 @@ export const SITE = {
 		address: "Nursery Compound, San Gabriel, Tuguegarao City, Cagayan 3500",
 		region: "Region 02 — Philippines",
 		phone: "(078) 396-1328",
-		hours: "Mon–Fri, 8:00 AM – 5:00 PM",
 		email: "ored.rfo2@da.gov.ph",
+		website: "https://cagayanvalley.da.gov.ph/",
 	},
 
 	vision:

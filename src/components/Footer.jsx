@@ -51,7 +51,17 @@ export default function Footer() {
                 {contact.email}
               </a>
             </ContactRow>
-            <ContactRow label="Hours">{contact.hours}</ContactRow>
+            <ContactRow label="Website">
+              {/* A new tab, so the portal stays open in front of the room. */}
+              <a
+                href={contact.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-mint-100 underline decoration-1 underline-offset-4"
+              >
+                {new URL(contact.website).hostname}
+              </a>
+            </ContactRow>
           </dl>
         </div>
       </div>

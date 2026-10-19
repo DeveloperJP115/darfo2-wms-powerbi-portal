@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   GROUPS,
   OFFICES,
+  SITE,
   defaultReport,
   findOffice,
   findReport,
@@ -48,6 +49,31 @@ describe("the live config", () => {
       const slugs = office.reports.map((report) => report.slug);
 
       expect(new Set(slugs).size).toBe(slugs.length);
+    }
+  });
+});
+
+describe("the data privacy notice", () => {
+  const notice = SITE.privacyNotice;
+
+  test("has a title and at least one section", () => {
+    expect(notice.title.trim()).not.toBe("");
+    expect(notice.sections.length).toBeGreaterThan(0);
+  });
+
+  test("every section has a known icon, a heading and a body", () => {
+    for (const section of notice.sections) {
+      expect(["eye", "shield", "document"]).toContain(section.icon);
+      expect(section.heading.trim()).not.toBe("");
+      expect(section.body.trim()).not.toBe("");
+    }
+  });
+
+  // The wording is the public RGA's, which names its own registry system.
+  // This portal is not that system.
+  test("does not name the RGA's registry system", () => {
+    for (const section of notice.sections) {
+      expect(section.body).not.toContain("Registry System");
     }
   });
 });

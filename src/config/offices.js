@@ -50,6 +50,45 @@ export const SITE = {
 	vision:
 		"Cagayan Valley as Modernized and Industrialized Consolidation hub for quality " +
 		"pre-processed and processed foods-feeds farm products.",
+
+	/*
+	 * Shown once per browser tab. The wording is the public RGA
+	 * portal's, minus the RGA's mention of its own registry system (RSBSA).
+	 * `icon` is one of: eye, shield, document.
+	 */
+	privacyNotice: {
+		title: "Data Privacy Notice",
+		sections: [
+			{
+				icon: "eye",
+				heading: "Our Commitment to Your Privacy",
+				body:
+					"We, at the Department of Agriculture, protect the privacy of your personal " +
+					'and sensitive personal information ("Personal Data") and commit to comply ' +
+					'with the Republic Act No. 10173 or the Data Privacy Act ("DPA"), its ' +
+					'Implementing Rules and Regulations ("IRR"), and other relevant issuances ' +
+					"of the National Privacy Commission.",
+			},
+			{
+				icon: "shield",
+				heading: "How We Protect Your Data",
+				body:
+					"Our goal is to protect your personal data on the channels you interact " +
+					"with us – through our website, our official emails, our offices, physical " +
+					"and digital forms submitted, mobile applications and online platforms.",
+			},
+			{
+				icon: "document",
+				heading: "What This Notice Covers",
+				body:
+					"This Privacy Notice outlines our approach on how we protect your privacy " +
+					"and explains in general terms the purpose and legal basis for the " +
+					"processing of personal data that the Department collects from you, the " +
+					"measures in place to protect your data privacy, and the rights that you " +
+					"may exercise in relation to such information.",
+			},
+		],
+	},
 };
 
 /**

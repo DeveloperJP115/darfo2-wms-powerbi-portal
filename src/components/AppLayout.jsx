@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigationType } from "react-router-dom";
 import ErrorBoundary from "./ErrorBoundary.jsx";
 import Footer from "./Footer.jsx";
 import OfficeRail from "./OfficeRail.jsx";
+import PrivacyNotice from "./PrivacyNotice.jsx";
 
 /*
  * The shell owns the rail.
@@ -69,6 +70,9 @@ export default function AppLayout() {
 
         <Footer />
       </div>
+
+      {/* Here rather than in a page, so no change of office can re-open it. */}
+      <PrivacyNotice />
     </div>
   );
 }

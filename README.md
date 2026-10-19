@@ -171,6 +171,18 @@ square so that every pixel falls inside the inscribed circle, which lets it sit 
 frame without anything poking past the edge. It has no background of its own, so place it
 on a light ground.
 
+### Edit the data privacy notice
+
+The notice's title and sections are `SITE.privacyNotice` in `offices.js`. Each section has
+an `icon` (`eye`, `shield` or `document`), a `heading` and a `body`. The wording is the
+public RGA portal's, minus its mention of the RGA's own registry system.
+
+It appears **once per browser tab**: closing it is remembered for that tab, so a refresh or
+a direct link does not bring it back, while a new tab or window shows it again. Showing it
+on every page load was tried and was too much in front of a room. It has an entrance
+animation but closes instantly, because an exit animation on a dialog is what broke the old
+drawer in Firefox.
+
 ### Adjust the palette or type
 
 Tokens live in the `@theme` block of `src/index.css`. **Gold has exactly one job: marking
@@ -288,9 +300,10 @@ src/
   config/
     offices.js           the only file you edit for content
     validate.js          what counts as a valid office, report and embed URL
-    offices.test.js      48 cases over the above
+    offices.test.js      tests over the above
   components/
     AppLayout.jsx        the shell: rail, main, footer, skip link, scroll reset
+    PrivacyNotice.jsx    the data privacy notice, once per browser tab
     OfficeRail.jsx       the collapsible office navigation
     ErrorBoundary.jsx    turns a render fault into a page, not a blank screen
     Masthead.jsx         home header, brand mark and greeting card

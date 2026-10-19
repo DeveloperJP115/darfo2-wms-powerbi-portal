@@ -188,10 +188,12 @@ drawer in Firefox.
 Tokens live in the `@theme` block of `src/index.css`. **Gold has exactly one job: marking
 a report that is not published yet.** Nothing else may use it.
 
-The `sun` oranges exist only for the greeting's time-of-day drawing, and are deliberately
-not gold. The greeting banner's wash ends in the drawing's own sky colour (peach by day,
-pale slate at night) rather than yellow. Near-identical warm hues side by side read as
-mistakes, and the "Coming soon" labels just below need yellow to themselves.
+The `sun`, `sky` and `night` tokens exist only for the home greeting. The banner is the
+sky at the current time of day: blue fading to a warm horizon at dawn, clear blue at noon,
+apricot in the afternoon, navy at night, with a sun or moon over green hills in the corner.
+It was chosen from four directions compared side by side, after a pastel wash barely
+registered on a projector. The warm tones are oranges, deliberately not gold, because the
+"Coming soon" labels just below need yellow to themselves.
 
 Tailwind's content sources are declared explicitly at the top of that file rather than
 auto-detected. Automatic detection scans the whole project including `docs/`, where the

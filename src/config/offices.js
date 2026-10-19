@@ -35,6 +35,7 @@ export const SITE = {
 	logos: {
 		da: "/da-logo.png",
 		bagongPilipinas: "/bp.png",
+		ntc: "/ntc.png",
 	},
 
 	contact: {

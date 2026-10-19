@@ -1,4 +1,5 @@
 import { SITE } from "../config/offices.js";
+import BrandLogo from "./BrandLogo.jsx";
 
 /*
  * The footer is the one dark block in the portal, and that is deliberate: on a
@@ -9,6 +10,19 @@ import { SITE } from "../config/offices.js";
  * The green is direction F's forest — the masthead treatment that was preferred
  * but not chosen — so it appears here rather than nowhere.
  */
+/*
+ * Each logo on its own white disc. The DA and NTC seals are white discs
+ * already and fill theirs; the Bagong Pilipinas emblem has no background, and
+ * its blue all but vanishes on forest green, so it sits inset in its disc.
+ */
+function LogoDisc({ children }) {
+  return (
+    <span className="inline-flex size-20 shrink-0 items-center justify-center rounded-full bg-white">
+      {children}
+    </span>
+  );
+}
+
 function ContactRow({ label, children }) {
   return (
     <div className="sm:flex sm:gap-6">
@@ -63,6 +77,33 @@ export default function Footer() {
               </a>
             </ContactRow>
           </dl>
+        </div>
+
+        <div className="border-white/15 flex flex-wrap items-center gap-5 border-t pt-10 md:col-span-2">
+          <LogoDisc>
+            <BrandLogo
+              src={SITE.logos.da}
+              alt="Department of Agriculture"
+              monogram="DA"
+              className="size-20"
+            />
+          </LogoDisc>
+          <LogoDisc>
+            <BrandLogo
+              src={SITE.logos.bagongPilipinas}
+              alt="Bagong Pilipinas"
+              monogram="BP"
+              className="size-18"
+            />
+          </LogoDisc>
+          <LogoDisc>
+            <BrandLogo
+              src={SITE.logos.ntc}
+              alt="National Telecommunications Commission"
+              monogram="NTC"
+              className="size-20"
+            />
+          </LogoDisc>
         </div>
       </div>
     </footer>

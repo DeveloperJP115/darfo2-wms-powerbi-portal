@@ -208,12 +208,46 @@
     width: calc(var(--rail-width-expanded) - var(--rail-width-collapsed));
   }
 
+  /*
+   * THE DATA PRIVACY NOTICE.
+   *
+   * An entrance and no exit. Keyframes rather than a transition, because an
+   * animation starts by itself when the dialog goes from display: none to
+   * shown, with no @starting-style needed. Closing is instant on purpose: an
+   * exit would have to outlive the dialog's place in the top layer, which is
+   * the exact failure that broke the old drawer in Firefox.
+   *
+   * The backdrop's values are written out in full rather than read from
+   * custom properties, so they do not depend on ::backdrop inheriting them.
+   */
+  .privacy-notice[open] {
+    animation: notice-enter 260ms var(--ease-out-soft) both;
+  }
+
+  .privacy-notice::backdrop {
+    background-color: rgb(15 23 42 / 0.55);
+    backdrop-filter: blur(4px);
+    animation: notice-backdrop-enter 260ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+}
+
+@keyframes notice-enter {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+
+@keyframes notice-backdrop-enter {
+  from {
+    opacity: 0;
+  }
 }
 
 /*
  * `::backdrop` is listed separately on purpose: it is not a descendant of
- * anything, so `*` does not match it. No dialog ships today, but the selector
- * stays so that any future one cannot silently escape reduced motion.
+ * anything, so `*` does not match it. The data privacy notice is a dialog, and
+ * this is what keeps its backdrop under reduced motion too.
  */
 @media (prefers-reduced-motion: reduce) {
   *,

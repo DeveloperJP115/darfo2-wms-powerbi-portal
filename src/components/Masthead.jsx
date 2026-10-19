@@ -95,24 +95,20 @@ export default function Masthead() {
             </p>
             <p className="text-slate-500 mt-1">{DATE.format(now)}</p>
 
-            <div className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-3">
-              <span className="flex items-center gap-3">
-                <BrandLogo
-                  src={SITE.logos.da}
-                  alt="Department of Agriculture"
-                  monogram="DA"
-                  className="size-9"
-                />
-                <BrandLogo
-                  src={SITE.logos.bagongPilipinas}
-                  alt="Bagong Pilipinas"
-                  monogram="BP"
-                  className="size-9"
-                />
-                <span className="text-slate-900 font-semibold">{SITE.office}</span>
-              </span>
-
-              <span className="text-slate-500">{SITE.subtitle}</span>
+            <div className="mt-5 flex items-center gap-3">
+              <BrandLogo
+                src={SITE.logos.da}
+                alt="Department of Agriculture"
+                monogram="DA"
+                className="size-9"
+              />
+              <BrandLogo
+                src={SITE.logos.bagongPilipinas}
+                alt="Bagong Pilipinas"
+                monogram="BP"
+                className="size-9"
+              />
+              <span className="text-slate-900 font-semibold">{SITE.office}</span>
             </div>
 
             <p className="eyebrow text-green-700 mt-6">{SITE.audience}</p>

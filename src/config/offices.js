@@ -139,10 +139,11 @@ export const OFFICES = [
 		blurb: "",
 		reports: [
 			{
-				slug: "dashboard",
-				name: "Dashboard",
+				slug: "icts-equipment-overview",
+				name: "ICTS Equipment Overview and Verification Dashboard",
 				embedUrl:
 					"https://app.powerbi.com/reportEmbed?reportId=ac5acc8b-52ad-4e07-b9d8-54f2459179b3&autoAuth=true&ctid=6898061d-1a6b-4e39-adfc-dc8afe072201",
+				thumbnail: "/thumbnails/pmed/icts-equipment-overview.png",
 				blurb: "",
 			},
 		],

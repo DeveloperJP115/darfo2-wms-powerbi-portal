@@ -122,17 +122,27 @@ describe("findReport", () => {
   });
 
   test("returns the report of the office asked for, not a namesake elsewhere", () => {
-    const [first, second] = OFFICES;
-    const slug = first.reports[0].slug;
-
     /*
-     * Two offices may legitimately hold a report with the same slug — every one
-     * of them does today — which is legal precisely because the route carries
-     * the office as well. The lookup must be scoped to the office it was given.
+     * Two offices may legitimately hold a report with the same slug, which is
+     * legal precisely because the route carries the office as well. The lookup
+     * must be scoped to the office it was given.
+     *
+     * The pair is found rather than assumed, so renaming one office's report
+     * does not break the test. If no two offices share a slug any more, there
+     * is no namesake to confuse and nothing to check.
      */
-    expect(second.reports[0].slug).toBe(slug);
-    expect(findReport(second.slug, slug)).toBe(second.reports[0]);
-    expect(findReport(second.slug, slug)).not.toBe(first.reports[0]);
+    const holders = (slug) =>
+      OFFICES.filter((office) => office.reports.some((report) => report.slug === slug));
+    const slug = OFFICES.flatMap((office) => office.reports.map((report) => report.slug)).find(
+      (candidate) => holders(candidate).length > 1,
+    );
+    if (!slug) return;
+
+    const [first, second] = holders(slug);
+    const theirs = (office) => office.reports.find((report) => report.slug === slug);
+
+    expect(findReport(second.slug, slug)).toBe(theirs(second));
+    expect(findReport(second.slug, slug)).not.toBe(theirs(first));
   });
 });
 

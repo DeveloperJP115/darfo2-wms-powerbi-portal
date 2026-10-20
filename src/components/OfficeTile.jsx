@@ -54,7 +54,9 @@ export default function OfficeTile({ office }) {
       )}
 
       <span className="text-green-600 mt-7 inline-flex items-center gap-2.5 font-semibold">
-        {count === 1 ? "Open report" : `Open ${count} reports`}
+        {/* "View", not "Open": the tile leads to the office's cards, and the
+            report itself opens from there. */}
+        {count === 1 ? "View report" : `View ${count} reports`}
         <Arrow />
       </span>
     </Link>

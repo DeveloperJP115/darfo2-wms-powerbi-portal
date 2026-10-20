@@ -114,6 +114,11 @@ export const GROUPS = [
  *   empty string until the report exists — the page then renders a "not
  *   published yet" card rather than a broken iframe.
  *
+ *   `thumbnail` is optional: the picture on the report's card, a file under
+ *   public/thumbnails/<office slug>/, written here as /thumbnails/pmed/name.png.
+ *   It is visible to anyone with the portal's address, so no person's name may
+ *   appear in it. Without one, the card shows a plain green tile.
+ *
  * Offices without a real report hold one placeholder. Replace the name and add
  * siblings as the office confirms them.
  *
@@ -134,10 +139,11 @@ export const OFFICES = [
 		blurb: "",
 		reports: [
 			{
-				slug: "dashboard",
-				name: "Dashboard",
+				slug: "icts-equipment-overview",
+				name: "ICTS Equipment Overview and Verification Dashboard",
 				embedUrl:
 					"https://app.powerbi.com/reportEmbed?reportId=ac5acc8b-52ad-4e07-b9d8-54f2459179b3&autoAuth=true&ctid=6898061d-1a6b-4e39-adfc-dc8afe072201",
+				thumbnail: "/thumbnails/pmed/icts-equipment-overview.png",
 				blurb: "",
 			},
 		],
@@ -273,13 +279,3 @@ export const findReport = (officeSlug, reportSlug) =>
  * silently treated as missing either — DashboardEmbed says what is wrong with it.
  */
 export const isLive = (report) => isValidEmbedUrl(report?.embedUrl);
-
-/**
- * What /:office renders: the first published report, or the first listed if
- * none are published yet.
- *
- * Preferring a published one matters during rollout — an office whose second
- * report goes live first should open on the one that has something to show.
- */
-export const defaultReport = (office) =>
-	office?.reports?.find((report) => isLive(report)) ?? office?.reports?.[0];

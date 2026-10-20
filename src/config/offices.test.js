@@ -3,7 +3,6 @@ import {
   GROUPS,
   OFFICES,
   SITE,
-  defaultReport,
   findOffice,
   findReport,
   isLive,
@@ -122,49 +121,27 @@ describe("findReport", () => {
   });
 
   test("returns the report of the office asked for, not a namesake elsewhere", () => {
-    const [first, second] = OFFICES;
-    const slug = first.reports[0].slug;
-
     /*
-     * Two offices may legitimately hold a report with the same slug — every one
-     * of them does today — which is legal precisely because the route carries
-     * the office as well. The lookup must be scoped to the office it was given.
+     * Two offices may legitimately hold a report with the same slug, which is
+     * legal precisely because the route carries the office as well. The lookup
+     * must be scoped to the office it was given.
+     *
+     * The pair is found rather than assumed, so renaming one office's report
+     * does not break the test. If no two offices share a slug any more, there
+     * is no namesake to confuse and nothing to check.
      */
-    expect(second.reports[0].slug).toBe(slug);
-    expect(findReport(second.slug, slug)).toBe(second.reports[0]);
-    expect(findReport(second.slug, slug)).not.toBe(first.reports[0]);
-  });
-});
+    const holders = (slug) =>
+      OFFICES.filter((office) => office.reports.some((report) => report.slug === slug));
+    const slug = OFFICES.flatMap((office) => office.reports.map((report) => report.slug)).find(
+      (candidate) => holders(candidate).length > 1,
+    );
+    if (!slug) return;
 
-describe("defaultReport", () => {
-  test("prefers the first published report over an earlier unpublished one", () => {
-    const office = {
-      reports: [
-        { slug: "a", name: "A", embedUrl: "" },
-        { slug: "b", name: "B", embedUrl: GOOD_URL },
-      ],
-    };
+    const [first, second] = holders(slug);
+    const theirs = (office) => office.reports.find((report) => report.slug === slug);
 
-    expect(defaultReport(office).slug).toBe("b");
-  });
-
-  test("falls back to the first listed when none are published", () => {
-    const office = {
-      reports: [
-        { slug: "a", name: "A", embedUrl: "" },
-        { slug: "b", name: "B", embedUrl: "" },
-      ],
-    };
-
-    expect(defaultReport(office).slug).toBe("a");
-  });
-
-  test.each([
-    ["an office with no reports", { reports: [] }],
-    ["an office with no reports key", {}],
-    ["undefined", undefined],
-  ])("returns undefined for %s", (_label, office) => {
-    expect(defaultReport(office)).toBeUndefined();
+    expect(findReport(second.slug, slug)).toBe(theirs(second));
+    expect(findReport(second.slug, slug)).not.toBe(theirs(first));
   });
 });
 
@@ -352,6 +329,38 @@ describe("validateConfig — reports", () => {
 
   test("an empty embed URL is how the config says 'not published yet'", () => {
     expect(validateConfig([validOffice], GROUP_IDS)).toEqual([]);
+  });
+});
+
+describe("validateConfig — thumbnails", () => {
+  const withThumbnail = (thumbnail) => [
+    { ...validOffice, reports: [{ ...validOffice.reports[0], thumbnail }] },
+  ];
+
+  test("a picture in the office's own folder is fine", () => {
+    expect(validateConfig(withThumbnail("/thumbnails/pmed/dashboard.png"), GROUP_IDS)).toEqual(
+      [],
+    );
+  });
+
+  test("no thumbnail at all is fine, because the card falls back to a plain tile", () => {
+    expect(validateConfig(withThumbnail(undefined), GROUP_IDS)).toEqual([]);
+    expect(validateConfig(withThumbnail(""), GROUP_IDS)).toEqual([]);
+  });
+
+  test.each([
+    ["outside the office's folder", "/thumbnails/amad/dashboard.png"],
+    ["missing the leading slash", "thumbnails/pmed/dashboard.png"],
+    ["not an image", "/thumbnails/pmed/dashboard.pdf"],
+  ])("a thumbnail %s is a warning, since the card still renders", (_label, thumbnail) => {
+    const problems = validateConfig(withThumbnail(thumbnail), GROUP_IDS);
+
+    expect(problems.map((problem) => problem.level)).toEqual(["warning"]);
+    expect(problems[0].message).toContain("PMED");
+  });
+
+  test("a thumbnail that is not text is an error", () => {
+    expect(levels(withThumbnail(42))).toContain("error");
   });
 });
 

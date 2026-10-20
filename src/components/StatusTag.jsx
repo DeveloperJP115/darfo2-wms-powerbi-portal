@@ -1,7 +1,7 @@
 /**
  * The portal's one status vocabulary: a report is either "Live" or
- * "Coming soon". Used on the switchboard, the rail, and the report tabs, so
- * the same report reads the same way everywhere.
+ * "Coming soon". Used on the switchboard, the rail, the report cards and the
+ * report header, so the same report reads the same way everywhere.
  *
  * Gold is reserved for the unpublished state and is used nowhere else.
  */

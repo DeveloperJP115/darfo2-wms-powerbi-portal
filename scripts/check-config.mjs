@@ -11,6 +11,7 @@
  * the moment this needs bundling it stops being usable as a build gate.
  */
 
+import { existsSync } from "node:fs";
 import { GROUPS, OFFICES } from "../src/config/offices.js";
 import { validateConfig } from "../src/config/validate.js";
 
@@ -20,6 +21,24 @@ const problems = validateConfig(
   OFFICES,
   GROUPS.map((group) => group.id),
 );
+
+/*
+ * The one check the validator cannot make: it also runs in the browser, which
+ * cannot see the disk. A thumbnail that names a missing file is a warning, not
+ * an error — the card falls back to a plain tile — but it is almost always a
+ * typo or a picture someone forgot to add.
+ */
+for (const office of OFFICES) {
+  for (const report of office.reports ?? []) {
+    const { thumbnail } = report;
+    if (typeof thumbnail === "string" && thumbnail !== "" && !existsSync(`public${thumbnail}`)) {
+      problems.push({
+        level: "warning",
+        message: `${office.code} (${office.slug}) › ${report.name}: thumbnail ${thumbnail} is not in public/.`,
+      });
+    }
+  }
+}
 const errors = problems.filter((problem) => problem.level === "error");
 const warnings = problems.filter((problem) => problem.level === "warning");
 

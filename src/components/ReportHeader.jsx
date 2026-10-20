@@ -3,12 +3,15 @@ import { isLive } from "../config/offices.js";
 import StatusTag from "./StatusTag.jsx";
 
 /*
- * Slim chrome for a report page: a way home, where you are, and the status of
- * what is on screen. Everything else is the report.
+ * Slim chrome for an office page and a report page: a way home, where you are,
+ * and the status of what is on screen. Everything else is the page. Without a
+ * report — on the office's own page — it names just the office.
  *
- * The breadcrumb is plain text. It says where you are; it is not a menu.
- * Switching office is the rail's job, and giving two controls the same job
- * means two things to keep in sync.
+ * The breadcrumb says where you are; it is not a menu. On a report page the
+ * office code links back up to the office's cards — one step up, the same as
+ * the "All … reports" button below it — but it never lists other offices or
+ * reports. Switching office is the rail's job, and giving two controls the same
+ * job means two things to keep in sync.
  *
  * No backdrop-filter here. A blurred sticky bar becomes the containing block
  * for fixed descendants, which is one of the five things that broke the old
@@ -40,15 +43,27 @@ export default function ReportHeader({ office, report }) {
           </Link>
 
           <h1 className="flex min-w-0 items-baseline gap-2.5">
-            <span className="code text-green-700 shrink-0 text-[17px]" title={office.name}>
-              {office.code}
-            </span>
-            <span aria-hidden="true" className="text-slate-400">
-              &rsaquo;
-            </span>
-            <span className="text-slate-500 truncate text-[17px]">
-              {report ? report.name : "No reports yet"}
-            </span>
+            {report ? (
+              <Link
+                to={`/${office.slug}`}
+                title={office.name}
+                className="code text-green-700 hover:text-green-800 shrink-0 text-[17px] underline decoration-1 underline-offset-4"
+              >
+                {office.code}
+              </Link>
+            ) : (
+              <span className="code text-green-700 shrink-0 text-[17px]" title={office.name}>
+                {office.code}
+              </span>
+            )}
+            {report && (
+              <>
+                <span aria-hidden="true" className="text-slate-400">
+                  &rsaquo;
+                </span>
+                <span className="text-slate-500 truncate text-[17px]">{report.name}</span>
+              </>
+            )}
           </h1>
         </div>
 

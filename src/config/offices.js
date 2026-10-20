@@ -114,6 +114,11 @@ export const GROUPS = [
  *   empty string until the report exists — the page then renders a "not
  *   published yet" card rather than a broken iframe.
  *
+ *   `thumbnail` is optional: the picture on the report's card, a file under
+ *   public/thumbnails/<office slug>/, written here as /thumbnails/pmed/name.png.
+ *   It is visible to anyone with the portal's address, so no person's name may
+ *   appear in it. Without one, the card shows a plain green tile.
+ *
  * Offices without a real report hold one placeholder. Replace the name and add
  * siblings as the office confirms them.
  *

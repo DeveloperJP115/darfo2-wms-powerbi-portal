@@ -239,6 +239,22 @@ export function validateConfig(offices, groupIds = []) {
         // Named here so the predicate has a subject to attach to.
         if (problem) error(`${reportLabel}: embedUrl ${problem}`);
       }
+
+      // Optional. A wrong path only costs the picture — the card falls back
+      // to a plain tile — so those are warnings. Each office's pictures live
+      // in its own folder, which keeps them findable as reports multiply.
+      const { thumbnail } = report;
+      if (thumbnail !== undefined && thumbnail !== "") {
+        const folder = `/thumbnails/${slug}/`;
+
+        if (typeof thumbnail !== "string") {
+          error(`${reportLabel}: thumbnail must be a path such as ${folder}report.png.`);
+        } else if (!thumbnail.startsWith(folder)) {
+          warning(`${reportLabel}: thumbnail should be in ${folder}, not "${thumbnail}".`);
+        } else if (!/\.(png|jpe?g|webp)$/i.test(thumbnail)) {
+          warning(`${reportLabel}: thumbnail "${thumbnail}" is not a PNG, JPEG or WebP image.`);
+        }
+      }
     });
   });
 

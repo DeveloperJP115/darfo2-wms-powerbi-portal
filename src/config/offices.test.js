@@ -355,6 +355,38 @@ describe("validateConfig — reports", () => {
   });
 });
 
+describe("validateConfig — thumbnails", () => {
+  const withThumbnail = (thumbnail) => [
+    { ...validOffice, reports: [{ ...validOffice.reports[0], thumbnail }] },
+  ];
+
+  test("a picture in the office's own folder is fine", () => {
+    expect(validateConfig(withThumbnail("/thumbnails/pmed/dashboard.png"), GROUP_IDS)).toEqual(
+      [],
+    );
+  });
+
+  test("no thumbnail at all is fine, because the card falls back to a plain tile", () => {
+    expect(validateConfig(withThumbnail(undefined), GROUP_IDS)).toEqual([]);
+    expect(validateConfig(withThumbnail(""), GROUP_IDS)).toEqual([]);
+  });
+
+  test.each([
+    ["outside the office's folder", "/thumbnails/amad/dashboard.png"],
+    ["missing the leading slash", "thumbnails/pmed/dashboard.png"],
+    ["not an image", "/thumbnails/pmed/dashboard.pdf"],
+  ])("a thumbnail %s is a warning, since the card still renders", (_label, thumbnail) => {
+    const problems = validateConfig(withThumbnail(thumbnail), GROUP_IDS);
+
+    expect(problems.map((problem) => problem.level)).toEqual(["warning"]);
+    expect(problems[0].message).toContain("PMED");
+  });
+
+  test("a thumbnail that is not text is an error", () => {
+    expect(levels(withThumbnail(42))).toContain("error");
+  });
+});
+
 describe("validateConfig — ordering and shape", () => {
   test("errors are listed before warnings", () => {
     const problems = validateConfig(

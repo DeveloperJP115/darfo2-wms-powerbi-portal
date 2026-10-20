@@ -15,8 +15,8 @@ feel.
 ## What it is (and is not)
 
 **Is:** a front-end-only static single-page app. A home switchboard of offices, a page per
-report embedding Power BI in a responsive iframe, and a rail that expands in place for
-switching between offices.
+office showing its reports as cards with thumbnails, a page per report embedding Power BI
+in a responsive iframe, and a rail that expands in place for switching between offices.
 
 **Is not:** there is no backend, no database, no API routes, no server-side code. No Power
 BI JavaScript SDK, no embed tokens, no service principals, no Power BI REST API. No CMS —
@@ -134,9 +134,26 @@ otherwise the office would silently vanish from both the switchboard and the rai
 
 ### Add a report to an office
 
-Append to that office's `reports`. With two or more, a tab strip appears on the report
-page automatically. Report slugs must be unique **within** their office; two different
-offices may both use `dashboard`, because the route carries the office as well.
+Append to that office's `reports`. It appears as a card on the office's page
+automatically. Report slugs must be unique **within** their office; two different offices
+may both use `dashboard`, because the route carries the office as well.
+
+### Add a report's thumbnail
+
+The picture on a report's card. Take a screenshot of the report and **black out every
+person's name first**: the picture is visible to anyone with the portal's address, signed in
+or not. Serial numbers and totals are fine to show. Names are not.
+
+Save it in `public/thumbnails/<office slug>/`, named after the report's slug, about 640 px
+wide (larger only costs loading time), and point the report at it:
+
+```js
+thumbnail: "/thumbnails/pmed/icts-equipment-overview.png",
+```
+
+A report without one shows a plain green tile. The build warns, without failing, if a
+thumbnail sits outside its office's folder, is not an image, or names a file that is not
+there.
 
 ### Paste in a Power BI embed URL
 
@@ -292,13 +309,12 @@ never uses. It was tried once to get React Router's `viewTransition` support and
 | Route | Renders |
 | ----- | ------- |
 | `/` | The switchboard: office tiles under their group headings |
-| `/:office` | That office's default report — first published, else first listed |
-| `/:office/:report` | One specific report |
+| `/:office` | That office's reports, as cards with thumbnails |
+| `/:office/:report` | One specific report, with a way back to the office's cards |
 | `*` | Not found |
 
-`/:office` renders directly rather than redirecting. A redirect would flash a URL nobody
-typed and leave a junk entry in history, which matters when someone is clicking back and
-forth in front of a room.
+Every office gets its card page, even one with a single report, so all of them behave the
+same way in front of a room.
 
 ---
 
@@ -318,8 +334,8 @@ src/
     Masthead.jsx         home header, brand mark and the Tagalog greeting with the date
     TimeOfDayArt.jsx     the greeting's sun or moon over green hills
     OfficeTile.jsx       one switch on the home switchboard
-    ReportHeader.jsx     slim report chrome: home, breadcrumb, status
-    ReportTabs.jsx       the current office's reports, and only those
+    ReportCard.jsx       one report on its office's page: thumbnail, title, status
+    ReportHeader.jsx     slim page chrome: home, breadcrumb, status
     DashboardEmbed.jsx   the report, "coming soon", or "that link won't work"
     StatusTag.jsx        the one Live / Coming soon vocabulary
     BrandLogo.jsx        logo image with monogram fallback
@@ -328,7 +344,8 @@ src/
     greeting.js          which Tagalog greeting fits the hour, with its tests
   pages/
     Home.jsx             masthead plus the office switchboard
-    ReportPage.jsx       the /:office and /:office/:report routes
+    OfficePage.jsx       /:office, the office's reports as cards
+    ReportPage.jsx       /:office/:report, one report
     NotFound.jsx         unknown slug or unknown path
   index.css              design tokens (@theme) — palette, type and motion
 scripts/
@@ -339,9 +356,10 @@ scripts/
 
 Design notes, in case you extend it:
 
-- **Three controls, three jobs, no overlap.** The rail says *which office*, the tabs say
-  *which report*, the breadcrumb says *where you are* and is deliberately not a menu.
-  Giving two controls the same job means two things to keep in sync.
+- **Three controls, three jobs, no overlap.** The rail says *which office*, the office's
+  cards say *which report*, the breadcrumb says *where you are* and is deliberately not a
+  menu. Giving two controls the same job means two things to keep in sync, which is why
+  the report page has no tabs, just a way back up to the cards.
 - **The rail expands in place; nothing floats over the report.** It is a width transition
   on an element that never unmounts and never enters the browser's top layer. That
   matters: it replaced a modal `<dialog>` drawer whose slide-out broke three times from

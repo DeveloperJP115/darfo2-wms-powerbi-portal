@@ -279,13 +279,3 @@ export const findReport = (officeSlug, reportSlug) =>
  * silently treated as missing either — DashboardEmbed says what is wrong with it.
  */
 export const isLive = (report) => isValidEmbedUrl(report?.embedUrl);
-
-/**
- * What /:office renders: the first published report, or the first listed if
- * none are published yet.
- *
- * Preferring a published one matters during rollout — an office whose second
- * report goes live first should open on the one that has something to show.
- */
-export const defaultReport = (office) =>
-	office?.reports?.find((report) => isLive(report)) ?? office?.reports?.[0];

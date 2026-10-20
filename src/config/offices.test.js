@@ -3,7 +3,6 @@ import {
   GROUPS,
   OFFICES,
   SITE,
-  defaultReport,
   findOffice,
   findReport,
   isLive,
@@ -143,38 +142,6 @@ describe("findReport", () => {
 
     expect(findReport(second.slug, slug)).toBe(theirs(second));
     expect(findReport(second.slug, slug)).not.toBe(theirs(first));
-  });
-});
-
-describe("defaultReport", () => {
-  test("prefers the first published report over an earlier unpublished one", () => {
-    const office = {
-      reports: [
-        { slug: "a", name: "A", embedUrl: "" },
-        { slug: "b", name: "B", embedUrl: GOOD_URL },
-      ],
-    };
-
-    expect(defaultReport(office).slug).toBe("b");
-  });
-
-  test("falls back to the first listed when none are published", () => {
-    const office = {
-      reports: [
-        { slug: "a", name: "A", embedUrl: "" },
-        { slug: "b", name: "B", embedUrl: "" },
-      ],
-    };
-
-    expect(defaultReport(office).slug).toBe("a");
-  });
-
-  test.each([
-    ["an office with no reports", { reports: [] }],
-    ["an office with no reports key", {}],
-    ["undefined", undefined],
-  ])("returns undefined for %s", (_label, office) => {
-    expect(defaultReport(office)).toBeUndefined();
   });
 });
 

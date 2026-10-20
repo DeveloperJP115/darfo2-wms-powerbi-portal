@@ -3,8 +3,9 @@ import { isLive } from "../config/offices.js";
 import StatusTag from "./StatusTag.jsx";
 
 /*
- * Slim chrome for a report page: a way home, where you are, and the status of
- * what is on screen. Everything else is the report.
+ * Slim chrome for an office page and a report page: a way home, where you are,
+ * and the status of what is on screen. Everything else is the page. Without a
+ * report — on the office's own page — it names just the office.
  *
  * The breadcrumb is plain text. It says where you are; it is not a menu.
  * Switching office is the rail's job, and giving two controls the same job
@@ -43,12 +44,14 @@ export default function ReportHeader({ office, report }) {
             <span className="code text-green-700 shrink-0 text-[17px]" title={office.name}>
               {office.code}
             </span>
-            <span aria-hidden="true" className="text-slate-400">
-              &rsaquo;
-            </span>
-            <span className="text-slate-500 truncate text-[17px]">
-              {report ? report.name : "No reports yet"}
-            </span>
+            {report && (
+              <>
+                <span aria-hidden="true" className="text-slate-400">
+                  &rsaquo;
+                </span>
+                <span className="text-slate-500 truncate text-[17px]">{report.name}</span>
+              </>
+            )}
           </h1>
         </div>
 

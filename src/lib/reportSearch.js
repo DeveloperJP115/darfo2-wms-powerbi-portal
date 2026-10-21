@@ -21,3 +21,25 @@ export function filterReports(reports, query) {
     return words.every((word) => text.includes(word));
   });
 }
+
+/**
+ * A report's name cut into the stretches the search matched and the rest, so
+ * its card can mark them. Words that overlap or touch join into one mark.
+ */
+export function highlightParts(text, query) {
+  const lower = text.toLowerCase();
+  const marked = new Array(text.length).fill(false);
+  for (const word of searchWords(query)) {
+    for (let at = lower.indexOf(word); at !== -1; at = lower.indexOf(word, at + 1)) {
+      marked.fill(true, at, at + word.length);
+    }
+  }
+
+  const parts = [];
+  for (let i = 0; i < text.length; i++) {
+    const last = parts.at(-1);
+    if (last?.match === marked[i]) last.text += text[i];
+    else parts.push({ text: text[i], match: marked[i] });
+  }
+  return parts;
+}

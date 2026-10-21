@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { filterReports } from "./reportSearch.js";
+import { filterReports, highlightParts } from "./reportSearch.js";
 
 // Hand-written, not read from the config, so these tests do not change
 // meaning when the office renames or adds a report.
@@ -54,5 +54,51 @@ describe("filterReports", () => {
     expect(filterReports([dotted, RICE], "2.0")).toEqual([dotted]);
     expect(filterReports([dotted, RICE], "v2.")).toEqual([dotted]);
     expect(filterReports([dotted, RICE], ".*")).toEqual([]);
+  });
+});
+
+describe("highlightParts", () => {
+  const plain = (text) => ({ text, match: false });
+  const marked = (text) => ({ text, match: true });
+
+  test("an empty search marks nothing", () => {
+    expect(highlightParts("Rice Production", " ")).toEqual([plain("Rice Production")]);
+  });
+
+  test("marks the typed letters, keeping the name's own capitals", () => {
+    expect(highlightParts("Farm Equipment Distribution", "equip")).toEqual([
+      plain("Farm "),
+      marked("Equip"),
+      plain("ment Distribution"),
+    ]);
+  });
+
+  test("marks each word, right up to the ends of the name", () => {
+    expect(highlightParts("Rice Production", "production rice")).toEqual([
+      marked("Rice"),
+      plain(" "),
+      marked("Production"),
+    ]);
+  });
+
+  test("marks every place a word appears", () => {
+    expect(highlightParts("Rice Production", "o")).toEqual([
+      plain("Rice Pr"),
+      marked("o"),
+      plain("ducti"),
+      marked("o"),
+      plain("n"),
+    ]);
+  });
+
+  test("joins words that overlap or touch into one mark", () => {
+    expect(highlightParts("Farm Equipment", "quip equi ment")).toEqual([
+      plain("Farm "),
+      marked("Equipment"),
+    ]);
+  });
+
+  test("leaves the name alone when the words matched only the blurb", () => {
+    expect(highlightParts("Farm Equipment", "tractors")).toEqual([plain("Farm Equipment")]);
   });
 });

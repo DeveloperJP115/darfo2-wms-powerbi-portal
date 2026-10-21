@@ -259,8 +259,9 @@ transform and you debug a bug that is not there. `touch` the file afterwards.
 
 ## Deploying to Vercel
 
-**Not deployed yet** as of 20 August 2026 — still in development. The configuration below
-is ready for the first deploy.
+**Deployed since 21 October 2026.** The Vercel project is connected to this repository:
+every merge to `main` redeploys the live site, and every pull request gets its own preview
+link.
 
 Zero-config for a Vite SPA: import the repository in Vercel and it detects Vite, builds
 with `npm run build`, and serves `dist/`.

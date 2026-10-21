@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import App from "./App.jsx";
 import { GROUPS, OFFICES } from "./config/offices.js";
 import { validateConfig } from "./config/validate.js";
@@ -33,10 +34,21 @@ if (import.meta.env.DEV) {
   }
 }
 
+/*
+ * Vercel Web Analytics: counts page views, including moves between offices and
+ * reports inside the app. No cookies, and nothing that identifies a visitor —
+ * the dashboard shows pages, countries, browsers and devices, never people.
+ *
+ * Production builds only. In development the package would load a debug script
+ * from Vercel's servers; leaving it out keeps the dev server free of outside
+ * requests. Viewing the numbers needs Web Analytics enabled on the Vercel
+ * project; until then the script is simply not found and nothing is counted.
+ */
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <App />
     </BrowserRouter>
+    {import.meta.env.PROD && <Analytics mode="production" />}
   </StrictMode>,
 );

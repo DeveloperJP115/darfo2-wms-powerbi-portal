@@ -72,7 +72,7 @@ export default function OfficePage() {
               <ul className="mt-4 grid gap-7 grid-cols-[repeat(auto-fill,minmax(min(100%,340px),340px))]">
                 {shown.map((report) => (
                   <li key={report.slug}>
-                    <ReportCard office={office} report={report} />
+                    <ReportCard office={office} report={report} query={query} />
                   </li>
                 ))}
               </ul>

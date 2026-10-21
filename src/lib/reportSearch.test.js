@@ -1,0 +1,58 @@
+import { describe, expect, test } from "vitest";
+import { filterReports } from "./reportSearch.js";
+
+// Hand-written, not read from the config, so these tests do not change
+// meaning when the office renames or adds a report.
+const ICTS = {
+  slug: "icts",
+  name: "ICTS Equipment Overview and Verification Dashboard",
+  blurb: "",
+};
+const FARM = {
+  slug: "farm",
+  name: "Farm Equipment Distribution",
+  blurb: "Tractors and harvesters handed out per province.",
+};
+const RICE = { slug: "rice", name: "Rice Production" };
+const REPORTS = [ICTS, FARM, RICE];
+
+describe("filterReports", () => {
+  test.each(["", "   "])("an empty search %j keeps every report", (query) => {
+    expect(filterReports(REPORTS, query)).toEqual([ICTS, FARM, RICE]);
+  });
+
+  test("matches the name whatever the capitals", () => {
+    expect(filterReports(REPORTS, "rICE")).toEqual([RICE]);
+  });
+
+  test("matches part of a word, so the cards narrow while someone types", () => {
+    expect(filterReports(REPORTS, "equip")).toEqual([ICTS, FARM]);
+  });
+
+  test("takes the words in any order", () => {
+    expect(filterReports(REPORTS, "equipment ICTS")).toEqual([ICTS]);
+  });
+
+  test("needs every word to match, not just one", () => {
+    expect(filterReports(REPORTS, "equipment rice")).toEqual([]);
+  });
+
+  test("matches the blurb as well as the name", () => {
+    expect(filterReports(REPORTS, "tractors")).toEqual([FARM]);
+  });
+
+  test("a report without a blurb has nothing extra to match", () => {
+    expect(filterReports([RICE], "undefined")).toEqual([]);
+  });
+
+  test("keeps the config's order rather than ranking", () => {
+    expect(filterReports([FARM, ICTS], "equipment")).toEqual([FARM, ICTS]);
+  });
+
+  test("treats punctuation literally", () => {
+    const dotted = { slug: "v2", name: "Inventory v2.0" };
+    expect(filterReports([dotted, RICE], "2.0")).toEqual([dotted]);
+    expect(filterReports([dotted, RICE], "v2.")).toEqual([dotted]);
+    expect(filterReports([dotted, RICE], ".*")).toEqual([]);
+  });
+});

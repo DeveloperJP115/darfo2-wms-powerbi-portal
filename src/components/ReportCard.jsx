@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { isLive } from "../config/offices.js";
+import { highlightParts } from "../lib/reportSearch.js";
 import StatusTag from "./StatusTag.jsx";
 
 function Arrow() {
@@ -61,6 +62,23 @@ function Thumbnail({ src }) {
 }
 
 /*
+ * Text with the words a search matched marked in mint. Not the browser's
+ * yellow: that reads as gold, and gold means "not published yet". No padding on
+ * the mark, so marking a word never widens a line and re-wraps the title.
+ */
+function Highlighted({ text, query }) {
+  return highlightParts(text, query).map((part, i) =>
+    part.match ? (
+      <mark key={i} className="bg-mint-100 rounded-sm text-inherit">
+        {part.text}
+      </mark>
+    ) : (
+      part.text
+    ),
+  );
+}
+
+/*
  * One report on its office's page. Built like the office tiles on the home
  * page — the same lift on hover and the same quick press — so the two levels
  * of choice feel like one system: pick an office, then pick a report.
@@ -68,7 +86,7 @@ function Thumbnail({ src }) {
  * An unpublished report still links through, to the page that says it is
  * coming, the same way an unpublished office tile does.
  */
-export default function ReportCard({ office, report }) {
+export default function ReportCard({ office, report, query = "" }) {
   const live = isLive(report);
 
   return (
@@ -85,11 +103,13 @@ export default function ReportCard({ office, report }) {
         </div>
 
         <h3 className="group-hover:text-green-700 text-slate-900 mt-4 text-xl leading-snug font-semibold tracking-tight transition-colors">
-          {report.name}
+          <Highlighted text={report.name} query={query} />
         </h3>
 
         {report.blurb && (
-          <p className="text-slate-500 mt-3 text-[17px] leading-relaxed">{report.blurb}</p>
+          <p className="text-slate-500 mt-3 text-[17px] leading-relaxed">
+            <Highlighted text={report.blurb} query={query} />
+          </p>
         )}
 
         <span

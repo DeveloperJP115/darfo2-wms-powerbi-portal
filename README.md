@@ -15,8 +15,9 @@ feel.
 ## What it is (and is not)
 
 **Is:** a front-end-only static single-page app. A home switchboard of offices, a page per
-office showing its reports as cards with thumbnails, a page per report embedding Power BI
-in a responsive iframe, and a rail that expands in place for switching between offices.
+office showing its reports as cards with thumbnails and a search bar to narrow them, a
+page per report embedding Power BI in a responsive iframe, and a rail that expands in place
+for switching between offices.
 
 **Is not:** there is no backend, no database, no API routes, no server-side code. No Power
 BI JavaScript SDK, no embed tokens, no service principals, no Power BI REST API. No CMS —
@@ -309,12 +310,16 @@ never uses. It was tried once to get React Router's `viewTransition` support and
 | Route | Renders |
 | ----- | ------- |
 | `/` | The switchboard: office tiles under their group headings |
-| `/:office` | That office's reports, as cards with thumbnails |
+| `/:office` | That office's reports, as cards with thumbnails, and a search bar over them |
 | `/:office/:report` | One specific report, with a way back to the office's cards |
 | `*` | Not found |
 
 Every office gets its card page, even one with a single report, so all of them behave the
 same way in front of a room.
+
+The search bar searches only that office's reports. Every word typed must appear in a
+report's name or blurb, in any order, ignoring capitals; the cards narrow with each letter
+and the matching words are marked. It starts empty each time the page opens.
 
 ---
 
@@ -335,6 +340,7 @@ src/
     TimeOfDayArt.jsx     the greeting's sun or moon over green hills
     OfficeTile.jsx       one switch on the home switchboard
     ReportCard.jsx       one report on its office's page: thumbnail, title, status
+    ReportSearch.jsx     the search bar on an office's page
     ReportHeader.jsx     slim page chrome: home, breadcrumb, status
     DashboardEmbed.jsx   the report, "coming soon", or "that link won't work"
     StatusTag.jsx        the one Live / Coming soon vocabulary
@@ -342,6 +348,7 @@ src/
     Footer.jsx           office identity, vision, contact
   lib/
     greeting.js          which Tagalog greeting fits the hour, with its tests
+    reportSearch.js      which reports a search matches, and which words to mark
   pages/
     Home.jsx             masthead plus the office switchboard
     OfficePage.jsx       /:office, the office's reports as cards

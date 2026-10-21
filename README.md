@@ -279,6 +279,21 @@ refreshing a deep link like `/pmed` makes Vercel look for a file at that path, f
 nothing, and return a 404. The rewrite hands every path to `index.html` so React Router
 can resolve it. Don't remove this file.
 
+### Visit counts
+
+The site counts page views with **Vercel Web Analytics** (`<Analytics />` in
+`src/main.jsx`, production builds only). It sees moves between offices and reports inside
+the app, not just first loads. To view the numbers, open the project in Vercel and choose
+**Analytics**. The first time, click **Enable** there, then redeploy.
+
+What it records: the page, the referrer, country, browser, operating system and device
+type. It uses no cookies and keeps nothing that identifies a person, so it can say how
+often `/pmed` was opened but never by whom.
+
+On Vercel's free Hobby plan it counts up to 50,000 page views a month and shows only the
+last month; past the limit, counting pauses rather than costing money. The Pro plan keeps
+12 months.
+
 ---
 
 ## Tech stack
@@ -292,13 +307,15 @@ can resolve it. Don't remove this file.
 | Tests      | Vitest, no extra config — it reads `vite.config.js` |
 | CI         | GitHub Actions: test + build on every push        |
 | Hosting    | Vercel (static)                                   |
+| Visit counts | Vercel Web Analytics, production builds only    |
 | Backend    | None                                              |
 
 Deliberately **not** Next.js, and deliberately not TypeScript.
 
-There are **no runtime dependencies beyond React, React DOM and React Router**. The bundle
-is around 251 kB. Adding an animation library, a UI kit, or a state manager needs
-justifying against that — the motion in this portal is all native CSS.
+There are **no runtime dependencies beyond React, React DOM, React Router and
+`@vercel/analytics`**, the last of which adds about 3 kB and nothing else. The bundle is
+around 269 kB. Adding an animation library, a UI kit, or a state manager needs justifying
+against that — the motion in this portal is all native CSS.
 
 `<BrowserRouter>` is deliberate rather than incidental. `createBrowserRouter` plus
 `<RouterProvider>` costs roughly **53 kB** of loader and action machinery this portal

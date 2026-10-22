@@ -45,6 +45,14 @@ export const SITE = {
 		phone: "(078) 396-1328",
 		email: "ored.rfo2@da.gov.ph",
 		website: "https://cagayanvalley.da.gov.ph/",
+
+		/*
+		 * The Google Form behind "Send feedback" in the footer. Use its responder
+		 * link, from Copy responder link in Google Forms, not the address bar
+		 * while editing it: the build refuses that one. Empty leaves the row out.
+		 * Responses go to whoever owns the form, never to this portal.
+		 */
+		feedback: "",
 	},
 
 	vision:

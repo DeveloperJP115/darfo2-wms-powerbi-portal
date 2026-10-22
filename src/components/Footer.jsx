@@ -103,6 +103,19 @@ export default function Footer() {
                 {new URL(contact.website).hostname}
               </a>
             </ContactRow>
+            {/* Only once the config names a form. A new tab, like the website. */}
+            {contact.feedback && (
+              <ContactRow label="Feedback">
+                <a
+                  href={contact.feedback}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-mint-100 underline decoration-1 underline-offset-4"
+                >
+                  Send feedback
+                </a>
+              </ContactRow>
+            )}
           </dl>
         </div>
       </div>

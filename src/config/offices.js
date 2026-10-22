@@ -52,7 +52,8 @@ export const SITE = {
 		 * while editing it: the build refuses that one. Empty leaves the row out.
 		 * Responses go to whoever owns the form, never to this portal.
 		 */
-		feedback: "",
+		feedback:
+			"https://docs.google.com/forms/d/e/1FAIpQLSd-acFHg9m0ibVNcPa2l74bQFwwW21vX_-TIyBCJK_Fj2gTDA/viewform",
 	},
 
 	vision:

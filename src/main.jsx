@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
-import { GROUPS, OFFICES } from "./config/offices.js";
+import { GROUPS, OFFICES, SITE } from "./config/offices.js";
 import { validateConfig } from "./config/validate.js";
 import "./index.css";
 
@@ -21,6 +21,7 @@ if (import.meta.env.DEV) {
   const problems = validateConfig(
     OFFICES,
     GROUPS.map((group) => group.id),
+    SITE,
   );
 
   if (problems.length > 0) {

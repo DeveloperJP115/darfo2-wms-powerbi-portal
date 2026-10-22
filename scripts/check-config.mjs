@@ -12,7 +12,7 @@
  */
 
 import { existsSync } from "node:fs";
-import { GROUPS, OFFICES } from "../src/config/offices.js";
+import { GROUPS, OFFICES, SITE } from "../src/config/offices.js";
 import { validateConfig } from "../src/config/validate.js";
 
 const CONFIG_PATH = "src/config/offices.js";
@@ -20,6 +20,7 @@ const CONFIG_PATH = "src/config/offices.js";
 const problems = validateConfig(
   OFFICES,
   GROUPS.map((group) => group.id),
+  SITE,
 );
 
 /*

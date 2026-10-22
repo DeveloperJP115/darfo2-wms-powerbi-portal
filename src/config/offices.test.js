@@ -250,7 +250,38 @@ const levels = (offices) =>
 
 describe("validateConfig — the live config", () => {
   test("has no problems at all", () => {
-    expect(validateConfig(OFFICES, GROUP_IDS)).toEqual([]);
+    expect(validateConfig(OFFICES, GROUP_IDS, SITE)).toEqual([]);
+  });
+});
+
+describe("validateConfig — the feedback form", () => {
+  const withFeedback = (feedback) =>
+    validateConfig([validOffice], GROUP_IDS, { contact: { feedback } });
+
+  test("no form yet is fine, because the footer leaves the row out", () => {
+    expect(withFeedback("")).toEqual([]);
+    expect(withFeedback(undefined)).toEqual([]);
+    expect(validateConfig([validOffice], GROUP_IDS, {})).toEqual([]);
+    expect(validateConfig([validOffice], GROUP_IDS)).toEqual([]);
+  });
+
+  test("a responder link is fine", () => {
+    expect(withFeedback(RESPONDER_URL)).toEqual([]);
+  });
+
+  test("the editing link is an error that names the setting to fix", () => {
+    const problems = withFeedback(`https://docs.google.com/forms/d/${FORM_ID}/edit`);
+
+    expect(problems.map((problem) => problem.level)).toEqual(["error"]);
+    expect(problems[0].message).toContain("SITE.contact.feedback");
+  });
+
+  test("is checked even when the offices stop the check early", () => {
+    const problems = validateConfig([], GROUP_IDS, { contact: { feedback: "nope" } });
+
+    expect(problems.map((problem) => problem.message).join(" ")).toContain(
+      "SITE.contact.feedback",
+    );
   });
 });
 

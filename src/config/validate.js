@@ -144,11 +144,21 @@ const SLUG_PATTERN = /^[a-z0-9-]+$/;
  * imports nothing from the config. Pass GROUPS.map(g => g.id). Omit it and the
  * group value is still required but is not checked against a list — which is
  * what the dev console wants before it has the groups to hand.
+ *
+ * `site` is SITE, passed in for the same reason. Only its feedback form link is
+ * checked; omit it and nothing in SITE is.
  */
-export function validateConfig(offices, groupIds = []) {
+export function validateConfig(offices, groupIds = [], site = {}) {
   const problems = [];
   const error = (message) => problems.push({ level: "error", message });
   const warning = (message) => problems.push({ level: "warning", message });
+
+  // Before the offices, whose checks can stop early. Empty means no form yet.
+  const feedback = site?.contact?.feedback;
+  if (feedback !== undefined && feedback !== "") {
+    const problem = describeFeedbackUrlProblem(feedback);
+    if (problem) error(`SITE.contact.feedback ${problem}`);
+  }
 
   if (!Array.isArray(offices)) {
     error("OFFICES is not an array.");
@@ -301,5 +311,5 @@ export function validateConfig(offices, groupIds = []) {
 }
 
 /** Just the blocking ones, for the build gate. */
-export const configErrors = (offices, groupIds) =>
-  validateConfig(offices, groupIds).filter((problem) => problem.level === "error");
+export const configErrors = (offices, groupIds, site) =>
+  validateConfig(offices, groupIds, site).filter((problem) => problem.level === "error");

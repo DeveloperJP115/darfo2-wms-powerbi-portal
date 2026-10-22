@@ -8,7 +8,11 @@ import {
   isLive,
   officesInGroup,
 } from "./offices.js";
-import { describeEmbedUrlProblem, validateConfig } from "./validate.js";
+import {
+  describeEmbedUrlProblem,
+  describeFeedbackUrlProblem,
+  validateConfig,
+} from "./validate.js";
 
 /*
  * offices.js is edited by hand, by whoever is looking after the portal rather
@@ -189,6 +193,42 @@ describe("describeEmbedUrlProblem", () => {
   });
 });
 
+const FORM_ID = "1aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789AbCdEf";
+const RESPONDER_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeAbCdEfGhIjKlMnOp/viewform";
+
+describe("describeFeedbackUrlProblem", () => {
+  test.each([
+    ["the responder link", RESPONDER_URL],
+    ["the responder link with Google's tracking parameter", `${RESPONDER_URL}?usp=dialog`],
+    [
+      "a responder link built from the form's own ID",
+      `https://docs.google.com/forms/d/${FORM_ID}/viewform`,
+    ],
+    ["a shortened link", "https://forms.gle/AbCdEfGhIjKlMnOp9"],
+  ])("accepts %s", (_label, url) => {
+    expect(describeFeedbackUrlProblem(url)).toBeNull();
+  });
+
+  test.each([
+    ["as it sits in the address bar", `https://docs.google.com/forms/d/${FORM_ID}/edit`],
+    ["on the Responses tab", `https://docs.google.com/forms/d/${FORM_ID}/edit#responses`],
+    ["with a trailing slash", `https://docs.google.com/forms/d/${FORM_ID}/edit/`],
+  ])(
+    "rejects the editing link %s, because staff would be asked for edit access",
+    (_label, url) => {
+      expect(describeFeedbackUrlProblem(url)).toContain("Copy responder link");
+    },
+  );
+
+  test.each([
+    ["not a web address", "Send feedback"],
+    ["plain http", "http://forms.gle/AbCdEfGhIjKlMnOp9"],
+    ["not text", 42],
+  ])("rejects %s", (_label, url) => {
+    expect(describeFeedbackUrlProblem(url)).not.toBeNull();
+  });
+});
+
 const GROUP_IDS = GROUPS.map((group) => group.id);
 
 /*
@@ -210,7 +250,38 @@ const levels = (offices) =>
 
 describe("validateConfig — the live config", () => {
   test("has no problems at all", () => {
-    expect(validateConfig(OFFICES, GROUP_IDS)).toEqual([]);
+    expect(validateConfig(OFFICES, GROUP_IDS, SITE)).toEqual([]);
+  });
+});
+
+describe("validateConfig — the feedback form", () => {
+  const withFeedback = (feedback) =>
+    validateConfig([validOffice], GROUP_IDS, { contact: { feedback } });
+
+  test("no form yet is fine, because the home page leaves the button out", () => {
+    expect(withFeedback("")).toEqual([]);
+    expect(withFeedback(undefined)).toEqual([]);
+    expect(validateConfig([validOffice], GROUP_IDS, {})).toEqual([]);
+    expect(validateConfig([validOffice], GROUP_IDS)).toEqual([]);
+  });
+
+  test("a responder link is fine", () => {
+    expect(withFeedback(RESPONDER_URL)).toEqual([]);
+  });
+
+  test("the editing link is an error that names the setting to fix", () => {
+    const problems = withFeedback(`https://docs.google.com/forms/d/${FORM_ID}/edit`);
+
+    expect(problems.map((problem) => problem.level)).toEqual(["error"]);
+    expect(problems[0].message).toContain("SITE.contact.feedback");
+  });
+
+  test("is checked even when the offices stop the check early", () => {
+    const problems = validateConfig([], GROUP_IDS, { contact: { feedback: "nope" } });
+
+    expect(problems.map((problem) => problem.message).join(" ")).toContain(
+      "SITE.contact.feedback",
+    );
   });
 });
 

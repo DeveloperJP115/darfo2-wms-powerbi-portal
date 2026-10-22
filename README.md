@@ -203,6 +203,22 @@ on every page load was tried and was too much in front of a room. It has an entr
 animation but closes instantly, because an exit animation on a dialog is what broke the old
 drawer in Firefox.
 
+### Link the feedback form
+
+**Send Feedback**, top right of the home page, opens a Google Form in a new tab. The portal
+only links to it: responses go to whoever owns the form, never to this repository or to
+Vercel.
+
+Put the form's **responder link** in `SITE.contact.feedback`. In Google Forms that is
+**Copy responder link**, the chain icon beside Publish, and it looks like
+`https://docs.google.com/forms/d/e/…/viewform` or `https://forms.gle/…`. Do not copy the
+address bar while editing the form. That is the editing link, staff who follow it are asked
+for edit access, and the build refuses it. Leave `feedback` empty and the home page leaves the
+button out.
+
+If the form asks for names, it needs its own privacy statement. That is personal data the
+form collects, and the portal's privacy notice does not cover it.
+
 ### Adjust the palette or type
 
 Tokens live in the `@theme` block of `src/index.css`. **Gold has exactly one job: marking
@@ -336,7 +352,7 @@ src/
     PrivacyNotice.jsx    the data privacy notice, once per browser tab
     OfficeRail.jsx       the collapsible office navigation
     ErrorBoundary.jsx    turns a render fault into a page, not a blank screen
-    Masthead.jsx         home header, brand mark and the Tagalog greeting with the date
+    Masthead.jsx         home header: brand mark, Send Feedback, Tagalog greeting and date
     TimeOfDayArt.jsx     the greeting's sun or moon over green hills
     OfficeTile.jsx       one switch on the home switchboard
     ReportCard.jsx       one report on its office's page: thumbnail, title, status

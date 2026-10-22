@@ -90,6 +90,41 @@ export function isValidEmbedUrl(url) {
   return typeof url === "string" && url.trim() !== "" && describeEmbedUrlProblem(url) === null;
 }
 
+/**
+ * Why the feedback form's link will not work, phrased the same way as
+ * describeEmbedUrlProblem. Returns null when it is usable, and an empty link is
+ * again the caller's business: it means there is no form yet.
+ *
+ * The mistake worth catching is Google Forms' editing link, because it is the
+ * one in the address bar while the form is being built. Staff who follow it are
+ * asked to request edit access, and anyone granted it can change the form and
+ * read every response.
+ */
+export function describeFeedbackUrlProblem(url) {
+  if (typeof url !== "string") {
+    return "must be a string.";
+  }
+
+  let parsed;
+  try {
+    parsed = new URL(url.trim());
+  } catch {
+    return "is not a web address.";
+  }
+
+  if (parsed.protocol !== "https:") {
+    return "should begin with https://";
+  }
+
+  const path = parsed.pathname.replace(/\/$/, "");
+
+  if (parsed.hostname === "docs.google.com" && /^\/forms\/.+\/edit$/.test(path)) {
+    return "is the link for editing the form, which asks staff for edit access. In Google Forms, use Copy responder link (the chain icon beside Publish) instead.";
+  }
+
+  return null;
+}
+
 /*
  * Slugs become URL paths, so they are held to one shape: lowercase letters,
  * digits and hyphens. That rules out the spaces, slashes and capitals that would
@@ -109,11 +144,21 @@ const SLUG_PATTERN = /^[a-z0-9-]+$/;
  * imports nothing from the config. Pass GROUPS.map(g => g.id). Omit it and the
  * group value is still required but is not checked against a list — which is
  * what the dev console wants before it has the groups to hand.
+ *
+ * `site` is SITE, passed in for the same reason. Only its feedback form link is
+ * checked; omit it and nothing in SITE is.
  */
-export function validateConfig(offices, groupIds = []) {
+export function validateConfig(offices, groupIds = [], site = {}) {
   const problems = [];
   const error = (message) => problems.push({ level: "error", message });
   const warning = (message) => problems.push({ level: "warning", message });
+
+  // Before the offices, whose checks can stop early. Empty means no form yet.
+  const feedback = site?.contact?.feedback;
+  if (feedback !== undefined && feedback !== "") {
+    const problem = describeFeedbackUrlProblem(feedback);
+    if (problem) error(`SITE.contact.feedback ${problem}`);
+  }
 
   if (!Array.isArray(offices)) {
     error("OFFICES is not an array.");
@@ -266,5 +311,5 @@ export function validateConfig(offices, groupIds = []) {
 }
 
 /** Just the blocking ones, for the build gate. */
-export const configErrors = (offices, groupIds) =>
-  validateConfig(offices, groupIds).filter((problem) => problem.level === "error");
+export const configErrors = (offices, groupIds, site) =>
+  validateConfig(offices, groupIds, site).filter((problem) => problem.level === "error");

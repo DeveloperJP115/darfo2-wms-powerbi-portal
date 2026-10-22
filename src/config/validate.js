@@ -90,6 +90,41 @@ export function isValidEmbedUrl(url) {
   return typeof url === "string" && url.trim() !== "" && describeEmbedUrlProblem(url) === null;
 }
 
+/**
+ * Why the feedback form's link will not work, phrased the same way as
+ * describeEmbedUrlProblem. Returns null when it is usable, and an empty link is
+ * again the caller's business: it means there is no form yet.
+ *
+ * The mistake worth catching is Google Forms' editing link, because it is the
+ * one in the address bar while the form is being built. Staff who follow it are
+ * asked to request edit access, and anyone granted it can change the form and
+ * read every response.
+ */
+export function describeFeedbackUrlProblem(url) {
+  if (typeof url !== "string") {
+    return "must be a string.";
+  }
+
+  let parsed;
+  try {
+    parsed = new URL(url.trim());
+  } catch {
+    return "is not a web address.";
+  }
+
+  if (parsed.protocol !== "https:") {
+    return "should begin with https://";
+  }
+
+  const path = parsed.pathname.replace(/\/$/, "");
+
+  if (parsed.hostname === "docs.google.com" && /^\/forms\/.+\/edit$/.test(path)) {
+    return "is the link for editing the form, which asks staff for edit access. In Google Forms, use Copy responder link (the chain icon beside Publish) instead.";
+  }
+
+  return null;
+}
+
 /*
  * Slugs become URL paths, so they are held to one shape: lowercase letters,
  * digits and hyphens. That rules out the spaces, slashes and capitals that would

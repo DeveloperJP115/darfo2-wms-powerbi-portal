@@ -8,7 +8,11 @@ import {
   isLive,
   officesInGroup,
 } from "./offices.js";
-import { describeEmbedUrlProblem, validateConfig } from "./validate.js";
+import {
+  describeEmbedUrlProblem,
+  describeFeedbackUrlProblem,
+  validateConfig,
+} from "./validate.js";
 
 /*
  * offices.js is edited by hand, by whoever is looking after the portal rather
@@ -186,6 +190,42 @@ describe("describeEmbedUrlProblem", () => {
     ["not a web address", "not a url"],
   ])("rejects %s", (_label, url) => {
     expect(describeEmbedUrlProblem(url)).not.toBeNull();
+  });
+});
+
+const FORM_ID = "1aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789AbCdEf";
+const RESPONDER_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeAbCdEfGhIjKlMnOp/viewform";
+
+describe("describeFeedbackUrlProblem", () => {
+  test.each([
+    ["the responder link", RESPONDER_URL],
+    ["the responder link with Google's tracking parameter", `${RESPONDER_URL}?usp=dialog`],
+    [
+      "a responder link built from the form's own ID",
+      `https://docs.google.com/forms/d/${FORM_ID}/viewform`,
+    ],
+    ["a shortened link", "https://forms.gle/AbCdEfGhIjKlMnOp9"],
+  ])("accepts %s", (_label, url) => {
+    expect(describeFeedbackUrlProblem(url)).toBeNull();
+  });
+
+  test.each([
+    ["as it sits in the address bar", `https://docs.google.com/forms/d/${FORM_ID}/edit`],
+    ["on the Responses tab", `https://docs.google.com/forms/d/${FORM_ID}/edit#responses`],
+    ["with a trailing slash", `https://docs.google.com/forms/d/${FORM_ID}/edit/`],
+  ])(
+    "rejects the editing link %s, because staff would be asked for edit access",
+    (_label, url) => {
+      expect(describeFeedbackUrlProblem(url)).toContain("Copy responder link");
+    },
+  );
+
+  test.each([
+    ["not a web address", "Send feedback"],
+    ["plain http", "http://forms.gle/AbCdEfGhIjKlMnOp9"],
+    ["not text", 42],
+  ])("rejects %s", (_label, url) => {
+    expect(describeFeedbackUrlProblem(url)).not.toBeNull();
   });
 });
 

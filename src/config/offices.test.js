@@ -258,7 +258,7 @@ describe("validateConfig — the feedback form", () => {
   const withFeedback = (feedback) =>
     validateConfig([validOffice], GROUP_IDS, { contact: { feedback } });
 
-  test("no form yet is fine, because the footer leaves the row out", () => {
+  test("no form yet is fine, because the home page leaves the button out", () => {
     expect(withFeedback("")).toEqual([]);
     expect(withFeedback(undefined)).toEqual([]);
     expect(validateConfig([validOffice], GROUP_IDS, {})).toEqual([]);

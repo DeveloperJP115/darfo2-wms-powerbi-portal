@@ -110,6 +110,35 @@ export default function Masthead() {
           </svg>
         </span>
         <h1 className="text-green-700 text-xl font-bold tracking-tight">{SITE.title}</h1>
+
+        {/* Only once the config names a form; a new tab, so the portal stays
+            open. The negative margin lets the pill sit in the bar without
+            making it taller. On a phone the words give way to the icon alone,
+            where they would push the title onto two lines. */}
+        {SITE.contact.feedback && (
+          <a
+            href={SITE.contact.feedback}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-green-700 hover:bg-mint-50 -my-1 ml-auto inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-1 leading-7 font-semibold transition-colors sm:px-4"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="size-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              <path d="M8 8h8" />
+              <path d="M8 12h5" />
+            </svg>
+            <span className="sr-only sm:not-sr-only">Send Feedback</span>
+          </a>
+        )}
       </div>
 
       <div className="px-6 pt-6 md:px-10">

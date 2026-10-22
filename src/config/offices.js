@@ -47,10 +47,11 @@ export const SITE = {
 		website: "https://cagayanvalley.da.gov.ph/",
 
 		/*
-		 * The Google Form behind "Send feedback" in the footer. Use its responder
-		 * link, from Copy responder link in Google Forms, not the address bar
-		 * while editing it: the build refuses that one. Empty leaves the row out.
-		 * Responses go to whoever owns the form, never to this portal.
+		 * The Google Form behind "Send Feedback", top right of the home page. Use
+		 * its responder link, from Copy responder link in Google Forms, not the
+		 * address bar while editing it: the build refuses that one. Empty leaves
+		 * the button out. Responses go to whoever owns the form, never to this
+		 * portal.
 		 */
 		feedback:
 			"https://docs.google.com/forms/d/e/1FAIpQLSd-acFHg9m0ibVNcPa2l74bQFwwW21vX_-TIyBCJK_Fj2gTDA/viewform",

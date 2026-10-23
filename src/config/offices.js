@@ -134,7 +134,7 @@ export const GROUPS = [
  *
  * UNCONFIRMED: the expanded names of the eight division codes are drafted here
  * and have not been checked by the office. So is "Isabela Experiment Station" —
- * the original brief called it Ilagan. BES and SCRC are confirmed.
+ * the original brief called it Ilagan. BES, SCRC and NVES are confirmed.
  */
 const placeholder = () => [
 	{ slug: "dashboard", name: "Dashboard", embedUrl: "", blurb: "" },
@@ -250,6 +250,14 @@ export const OFFICES = [
 		slug: "qes",
 		code: "QES",
 		name: "Quirino Experiment Station",
+		group: "stations",
+		blurb: "",
+		reports: placeholder(),
+	},
+	{
+		slug: "nves",
+		code: "NVES",
+		name: "Nueva Vizcaya Experiment Station",
 		group: "stations",
 		blurb: "",
 		reports: placeholder(),

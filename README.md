@@ -82,14 +82,15 @@ Two groups, both defined in the config rather than in any component.
 
 **Divisions:** PMED, AMAD, ILD, RAED, FOD, FAD, Research Division, Regulatory Division.
 
-**Stations and research centres:** NCES, IES, CVRC, SCRC, QES, BES.
+**Stations and research centres:** NCES, IES, CVRC, SCRC, QES, NVES, BES.
 
 The number of offices is not fixed. Never write a count into copy, markup, or a comment —
 everything maps over `OFFICES`, so the portal works with however many entries the config
 holds.
 
-Two names are confirmed by the office: **BES is Batanes Experiment Station** and **SCRC is
-Southern Cagayan Research Center**. The rest of the expansions are drafts — see Open items.
+Three names are confirmed by the office: **BES is Batanes Experiment Station**, **SCRC is
+Southern Cagayan Research Center** and **NVES is Nueva Vizcaya Experiment Station**. The rest
+of the expansions are drafts — see Open items.
 
 ---
 
